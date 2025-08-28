@@ -1,0 +1,129 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f0f0;
+  padding: 1em;
+  color: #333;
+  margin: 0;
+}
+
+.app {
+  max-width: 600px;
+  margin: auto;
+  background: #fff;
+  padding: 1em;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.controls button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #333;
+  transition: transform 0.1s ease;
+}
+
+.controls button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.controls button:hover:not(:disabled) {
+  transform: scale(1.2);
+}
+
+/* Timer and progress */
+#current-exercise {
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.3rem;
+  min-height: 2.2rem;
+}
+
+#timer {
+  font-size: 4rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 0.7rem;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 4px;
+}
+
+#progress-bar-container {
+  width: 100%;
+  background-color: #ddd; /* Light grey for background of progress bar */
+  height: 30px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #28a745; /* Default green for exercise */
+  transition: width 1s linear;
+}
+
+.rest-label {
+  display: block;
+  margin-bottom: 0.3em;
+  font-weight: 600;
+}
+
+/* Routine creator */
+#routine-creator h2 {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+input, select, button {
+  margin: 0.5em 0;
+  padding: 0.5em;
+  width: 100%;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.exercise-item {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+
+.exercise-item input.exercise-name {
+  flex: 2;
+}
+
+.exercise-item label {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.exercise-duration {
+  flex: 1;
+  width: 70px;
+}
+
+#routine-manager {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+#routine-manager select {
+  flex-grow: 1;
+}

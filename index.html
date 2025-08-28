@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Fitness App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <section id="routine-runner">
+      <!-- Combined Start/Resume Button -->
+      <div class="controls">
+        <button id="start-resume-btn" onclick="startOrResumeRoutine()" title="Start">&#9654;</button>
+        <button id="pause-btn" onclick="pauseRoutine()" title="Pause" disabled>&#10073;&#10073;</button>
+        <button id="reset-btn" onclick="resetRoutine()" title="Reset">&#x21bb;</button>
+      </div>
+
+      <div id="current-exercise"></div>
+      <div id="timer">00:00</div>
+      <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+      </div>
+      <label for="rest-time" class="rest-label">Rest time (seconds):</label>
+      <input type="number" id="rest-time" value="15" min="0" />
+    </section>
+
+    <!-- Routine Creator -->
+    <section id="routine-creator">
+      <h2>Create Routine</h2>
+      <input type="text" id="routine-name" placeholder="Routine Name" />
+      <div id="exercise-list">
+        <div class="exercise-item">
+          <input type="text" class="exercise-name" placeholder="Exercise Name" />
+          <label>Duration (seconds):</label>
+          <input type="number" class="exercise-duration" value="30" min="1" />
+        </div>
+      </div>
+      <button type="button" onclick="addExercise()">+ Add Exercise</button>
+      <button type="button" onclick="saveRoutine()">Save Routine</button>
+    </section>
+
+    <!-- Routine Selector and Delete -->
+    <section id="routine-manager">
+      <select id="routine-select"></select>
+      <button type="button" onclick="deleteRoutine()">Delete Routine</button>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+
+  <!-- Add your countdown beep sound here -->
+  <audio id="beep-sound" src="countdown.wav" preload="auto"></audio>
+</body>
+</html>
