@@ -22,29 +22,34 @@
       <div id="progress-bar-container">
         <div id="progress-bar"></div>
       </div>
-      <label for="rest-time" class="rest-label">Rest time between exercises (seconds):</label>
-      <input type="number" id="rest-time" value="15" min="0" />
     </section>
 
     <!-- Routine Creator -->
     <section id="routine-creator">
       <h2>Create Routine</h2>
 
+      <!-- Routine Info -->
       <div class="routine-header">
         <input type="text" id="routine-name" placeholder="Routine Name" />
-        <input type="number" id="set-count" placeholder="Sets (e.g., 1)" min="1" value="1" />
+        <input type="number" id="set-count" placeholder="Number of Sets" min="1" value="1" />
         <input type="number" id="set-rest" placeholder="Rest Between Sets (sec)" min="0" value="0" />
       </div>
 
+      <!-- Exercise List -->
       <div id="exercise-list">
         <div class="exercise-item">
           <input type="text" class="exercise-name" placeholder="Exercise Name" />
           <label>Duration (seconds):</label>
           <input type="number" class="exercise-duration" value="30" min="1" />
+          <button type="button" class="delete-exercise" onclick="deleteExercise(this)">X</button>
         </div>
       </div>
 
       <button type="button" onclick="addExercise()">+ Add Exercise</button>
+
+      <!-- Rest time between exercises -->
+      <label for="rest-time" class="rest-label">Rest time between exercises (seconds):</label>
+      <input type="number" id="rest-time" value="15" min="0" />
 
       <button type="button" onclick="saveRoutine()">Save Routine</button>
       <div id="save-feedback"></div>
