@@ -49,9 +49,6 @@ function addExercise() {
   nameInput.className = 'exercise-name';
   nameInput.placeholder = 'Exercise Name';
 
-  const label = document.createElement('label');
-  label.textContent = "Duration (seconds):";
-
   const durationInput = document.createElement('input');
   durationInput.type = 'number';
   durationInput.className = 'exercise-duration';
@@ -65,14 +62,13 @@ function addExercise() {
   deleteBtn.onclick = () => container.remove();
 
   container.appendChild(nameInput);
-  container.appendChild(label);
   container.appendChild(durationInput);
   container.appendChild(deleteBtn);
 
   document.getElementById('exercise-list').appendChild(container);
 }
 
-// Delete an exercise row (for existing HTML rows)
+// Delete an exercise row
 function deleteExercise(button) {
   const item = button.parentElement;
   item.remove();
