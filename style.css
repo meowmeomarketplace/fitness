@@ -83,7 +83,7 @@ body {
   height: 100%;
   width: 0%;
   background-color: #28a745;
-  transition: width 0.1s linear; /* smoother fill */
+  transition: width 0.1s linear;
 }
 
 .rest-label {
