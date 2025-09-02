@@ -91,28 +91,23 @@ body {
 
 .routine-row {
   display: flex;
+  align-items: center;
   gap: 1em;
   margin-bottom: 0.5em;
-  flex-wrap: wrap; /* stack on very small screens */
+  flex-wrap: wrap;
 }
 
-.routine-input {
-  display: flex;
-  flex-direction: column; /* label above input */
-  flex: 1; /* equal width for each input group */
-}
-
-.routine-input label {
+.routine-row label {
   font-weight: 600;
+  white-space: nowrap;
 }
 
-input, select, button {
-  margin: 0.3em 0;
-  padding: 0.5em;
-  font-size: 1em;
-  box-sizing: border-box;
+.routine-row input {
+  flex: 1;
+  min-width: 60px;
 }
 
+/* Exercise items */
 .exercise-item {
   display: flex;
   gap: 0.5em;
@@ -158,4 +153,11 @@ input, select, button {
 
 #routine-manager select {
   flex-grow: 1;
+}
+
+input, select, button {
+  margin: 0.3em 0;
+  padding: 0.5em;
+  font-size: 1em;
+  box-sizing: border-box;
 }
