@@ -105,10 +105,7 @@ function countdownStep(duration, label, callback) {
     if (!isPaused) {
       secondsLeft--;
       if (secondsLeft > 0 && secondsLeft <= 3) {
-        try {
-          beep.currentTime = 0;
-          beep.play();
-        } catch (e) { console.error(e); }
+        try { beep.currentTime = 0; beep.play(); } catch (e) {}
       }
       updateTimerDisplay(duration);
       if (secondsLeft <= 0) {
@@ -159,12 +156,10 @@ function runNextStep() {
 
   if (currentExerciseIndex >= exercises.length) {
     if (currentSet < totalSets) {
-      inRest = true;
-      currentExerciseIndex = 0;
       currentSet++;
-      progressBar.style.backgroundColor = '#007bff';
-      countdownStep(setRestDuration, "Set Rest", runNextStep);
-      nextExerciseDisplay.textContent = "";
+      currentExerciseIndex = 0;
+      inRest = false; // no rest before set
+      runNextStep();
       return;
     } else {
       currentExerciseDisplay.textContent = "Done!";
@@ -181,6 +176,8 @@ function runNextStep() {
     }
   }
 
+  const ex = exercises[currentExerciseIndex];
+
   if (inRest && restDuration > 0) {
     progressBar.style.backgroundColor = '#ffc107';
     const nextEx = exercises[currentExerciseIndex];
@@ -190,12 +187,16 @@ function runNextStep() {
       runNextStep();
     });
   } else {
-    const ex = exercises[currentExerciseIndex];
-    progressBar.style.backgroundColor = '#28a745';
-    inRest = false;
-    currentExerciseDisplay.textContent = `Set ${currentSet} of ${totalSets}\n${ex.name}`;
+    let label = "";
+    if (totalSets > 1) label += `Set ${currentSet}\n`;
+    label += ex.name;
+
+    currentExerciseDisplay.textContent = label;
+
     const nextEx = exercises[currentExerciseIndex + 1];
-    nextExerciseDisplay.textContent = "Next: " + (nextEx ? nextEx.name : "");
+    nextExerciseDisplay.textContent = nextEx ? "Next: " + nextEx.name : "";
+
+    progressBar.style.backgroundColor = '#28a745';
     countdownStep(ex.duration, ex.name, () => {
       inRest = true;
       currentExerciseIndex++;
