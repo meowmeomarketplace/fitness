@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Purrfect Fitness</title>
+  <title>Fitness Timer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -28,12 +28,22 @@
     <section id="routine-creator">
       <h2>Create Routine</h2>
 
-      <!-- Routine Info Row -->
-      <div class="routine-header">
+      <!-- First Row: Routine Name & Sets -->
+      <div class="routine-row">
+        <label for="routine-name">Routine Name:</label>
         <input type="text" id="routine-name" placeholder="Routine Name" />
-        <input type="number" id="set-count" placeholder="Number of Sets" min="1" value="1" />
-        <input type="number" id="set-rest" placeholder="Rest Between Sets (sec)" min="0" value="0" />
-        <input type="number" id="rest-time" placeholder="Rest Between Exercises (sec)" min="0" value="15" />
+
+        <label for="set-count">Sets:</label>
+        <input type="number" id="set-count" placeholder="1" min="1" value="1" />
+      </div>
+
+      <!-- Second Row: Rest Between Sets & Rest Between Exercises -->
+      <div class="routine-row">
+        <label for="set-rest">Rest Between Sets (sec):</label>
+        <input type="number" id="set-rest" placeholder="0" min="0" value="0" />
+
+        <label for="rest-time">Rest Between Exercises (sec):</label>
+        <input type="number" id="rest-time" placeholder="15" min="0" value="15" />
       </div>
 
       <!-- Exercise List -->
