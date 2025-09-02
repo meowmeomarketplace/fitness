@@ -13,19 +13,17 @@ const resetBtn = document.getElementById('reset-btn');
 
 const beep = document.getElementById('beep-sound');
 
-let timerInterval = null;
 let isPaused = false;
-let secondsLeft = 0;
-
 let currentRoutine = null;
 let currentExerciseIndex = 0;
-let inRest = false;
-let restDuration = 0;
-
-let totalSets = 1;
 let currentSet = 1;
+let totalSets = 1;
+let inRest = false;
+let restType = ""; // "exercise" or "set"
+let restDuration = 0;
 let setRestDuration = 0;
 
+// Load routines from localStorage
 function loadRoutines() {
   routineSelect.innerHTML = "";
   Object.keys(routines).forEach(name => {
@@ -37,6 +35,7 @@ function loadRoutines() {
 }
 loadRoutines();
 
+// Add exercise input
 function addExercise() {
   const container = document.createElement('div');
   container.className = 'exercise-item';
@@ -62,6 +61,7 @@ function addExercise() {
   document.getElementById('exercise-list').appendChild(container);
 }
 
+// Save routine
 function saveRoutine() {
   const name = document.getElementById('routine-name').value.trim();
   if (!name) return alert("Enter a routine name!");
@@ -84,12 +84,14 @@ function saveRoutine() {
   alert("Routine saved!");
 }
 
+// Format seconds to MM:SS
 function formatTime(seconds) {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
   const s = (seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 }
 
+// Start or resume routine
 function startOrResumeRoutine() {
   if (isPaused && currentRoutine) {
     isPaused = false;
@@ -102,17 +104,17 @@ function startOrResumeRoutine() {
   if (!selected) return alert("Select a routine!");
 
   const routineObj = routines[selected];
-  if (!routineObj || !routineObj.exercises || routineObj.exercises.length === 0)
-    return alert("Routine has no exercises!");
+  if (!routineObj || !routineObj.exercises.length) return alert("Routine has no exercises!");
 
   currentRoutine = routineObj;
+  totalSets = routineObj.sets || 1;
+  setRestDuration = routineObj.setRest || 0;
   restDuration = parseInt(restInput.value) || 0;
-  totalSets = currentRoutine.sets || 1;
-  setRestDuration = currentRoutine.setRest || 0;
 
   currentExerciseIndex = 0;
   currentSet = 1;
   inRest = false;
+  restType = "";
   isPaused = false;
 
   startResumeBtn.disabled = true;
@@ -122,65 +124,86 @@ function startOrResumeRoutine() {
   runNextStep();
 }
 
+// Run next step (exercise/rest/set)
 function runNextStep() {
   if (!currentRoutine) return resetRoutine();
 
   const exercises = currentRoutine.exercises;
 
-  // Completed all exercises in current set
+  // Finished all exercises in current set
   if (currentExerciseIndex >= exercises.length) {
     if (currentSet < totalSets) {
-      currentSet++;
-      currentExerciseIndex = 0;
-      inRest = false;
-      runNextStep();
-      return;
+      // Rest between sets if applicable
+      if (setRestDuration > 0) {
+        inRest = true;
+        restType = "set";
+        nextExerciseDisplay.textContent = "";
+        countdownSmooth(setRestDuration, "Rest Between Sets", () => {
+          inRest = false;
+          restType = "";
+          currentExerciseIndex = 0;
+          currentSet++;
+          runNextStep();
+        });
+        return;
+      } else {
+        currentSet++;
+        currentExerciseIndex = 0;
+        inRest = false;
+        runNextStep();
+        return;
+      }
     } else {
+      // Finished all sets
       currentExerciseDisplay.textContent = "Done!";
       timerDisplay.textContent = "00:00";
       progressBar.style.width = '100%';
       progressBar.style.backgroundColor = '#28a745';
+      nextExerciseDisplay.textContent = "";
       startResumeBtn.disabled = false;
       startResumeBtn.innerHTML = "&#9654;";
       pauseBtn.disabled = true;
       resetBtn.disabled = true;
       currentRoutine = null;
-      nextExerciseDisplay.textContent = "";
       return;
     }
   }
 
-  const ex = exercises[currentExerciseIndex];
+  const exercise = exercises[currentExerciseIndex];
 
-  if (inRest && restDuration > 0) {
+  if (inRest && restType === "exercise" && restDuration > 0) {
+    nextExerciseDisplay.textContent = "Next: " + exercise.name;
     progressBar.style.backgroundColor = '#ffc107';
-    const nextEx = exercises[currentExerciseIndex];
-    nextExerciseDisplay.textContent = "Next: " + (nextEx ? nextEx.name : "");
     countdownSmooth(restDuration, "Rest", () => {
       inRest = false;
+      restType = "";
       runNextStep();
     });
   } else {
     // Exercise display with set number
     let label = "";
     if (totalSets > 1) label += `Set ${currentSet}\n`;
-    label += ex.name;
+    label += exercise.name;
     currentExerciseDisplay.textContent = label;
-    nextExerciseDisplay.textContent = ""; // only show during rest
+    nextExerciseDisplay.textContent = "";
 
     progressBar.style.backgroundColor = '#28a745';
-    countdownSmooth(ex.duration, ex.name, () => {
-      inRest = true;
+
+    countdownSmooth(exercise.duration, exercise.name, () => {
+      // After exercise, rest before next exercise if more exercises remain
       currentExerciseIndex++;
+      if (currentExerciseIndex < exercises.length && restDuration > 0) {
+        inRest = true;
+        restType = "exercise";
+      }
       runNextStep();
     });
   }
 }
 
-// Smooth countdown function for continuous progress
+// Smooth countdown using requestAnimationFrame
 function countdownSmooth(duration, label, callback) {
   const startTime = Date.now();
-  const endTime = startTime + duration * 1000;
 
   function update() {
     if (isPaused) {
@@ -190,13 +213,17 @@ function countdownSmooth(duration, label, callback) {
 
     const now = Date.now();
     const elapsed = (now - startTime) / 1000;
-    secondsLeft = Math.max(Math.ceil(duration - elapsed), 0);
-    timerDisplay.textContent = formatTime(secondsLeft);
+    let remaining = Math.max(duration - elapsed, 0);
+    timerDisplay.textContent = formatTime(Math.ceil(remaining));
 
     const percent = Math.min((elapsed / duration) * 100, 100);
     progressBar.style.width = percent + "%";
 
-    if (secondsLeft <= 0) {
+    if (remaining <= 3 && remaining > 0) {
+      try { beep.currentTime = 0; beep.play(); } catch {}
+    }
+
+    if (remaining <= 0) {
       callback();
     } else {
       requestAnimationFrame(update);
@@ -205,44 +232,43 @@ function countdownSmooth(duration, label, callback) {
   requestAnimationFrame(update);
 }
 
+// Pause routine
 function pauseRoutine() {
-  if (!timerInterval) return;
   isPaused = true;
   pauseBtn.disabled = true;
   startResumeBtn.disabled = false;
   startResumeBtn.innerHTML = "&#9654;";
 }
 
+// Reset routine
 function resetRoutine() {
-  clearInterval(timerInterval);
-  timerInterval = null;
+  isPaused = false;
   currentRoutine = null;
   currentExerciseIndex = 0;
   currentSet = 1;
   inRest = false;
-  isPaused = false;
-
+  restType = "";
   timerDisplay.textContent = "00:00";
   currentExerciseDisplay.textContent = "";
   nextExerciseDisplay.textContent = "";
   progressBar.style.width = '0%';
   progressBar.style.backgroundColor = '#28a745';
-
   startResumeBtn.disabled = false;
   startResumeBtn.innerHTML = "&#9654;";
   pauseBtn.disabled = true;
   resetBtn.disabled = true;
 }
 
+// Delete routine
 function deleteRoutine() {
   const selected = routineSelect.value;
   if (!selected) return alert("Select a routine to delete!");
   if (!confirm(`Delete routine "${selected}"?`)) return;
-
   delete routines[selected];
   localStorage.setItem('routines', JSON.stringify(routines));
   loadRoutines();
   resetRoutine();
 }
 
+// Add initial exercise if none exists
 if (document.querySelectorAll('.exercise-item').length === 0) addExercise();
