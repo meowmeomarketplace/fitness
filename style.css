@@ -91,12 +91,18 @@ body {
 
 .routine-row {
   display: flex;
-  align-items: center;
-  gap: 0.5em;
+  gap: 1em;
   margin-bottom: 0.5em;
+  flex-wrap: wrap; /* stack on very small screens */
 }
 
-.routine-row label {
+.routine-input {
+  display: flex;
+  flex-direction: column; /* label above input */
+  flex: 1; /* equal width for each input group */
+}
+
+.routine-input label {
   font-weight: 600;
 }
 
