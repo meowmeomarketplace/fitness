@@ -158,7 +158,7 @@ function runNextStep() {
     if (currentSet < totalSets) {
       currentSet++;
       currentExerciseIndex = 0;
-      inRest = false; // no rest before set
+      inRest = false;
       runNextStep();
       return;
     } else {
