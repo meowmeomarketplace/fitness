@@ -95,10 +95,22 @@ body {
   text-align: center;
 }
 
-input, select, button {
-  margin: 0.5em 0;
+.routine-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin-bottom: 1em;
+}
+
+.routine-header input {
+  flex: 1;
   padding: 0.5em;
-  width: 100%;
+  font-size: 1em;
+}
+
+input, select, button {
+  margin: 0.3em 0;
+  padding: 0.5em;
   font-size: 1em;
   box-sizing: border-box;
 }
@@ -123,6 +135,12 @@ input, select, button {
 .exercise-duration {
   flex: 1;
   width: 70px;
+}
+
+#save-feedback {
+  font-size: 0.9rem;
+  color: #28a745;
+  margin-top: 0.5em;
 }
 
 #routine-manager {
