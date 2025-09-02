@@ -4,13 +4,14 @@ const routineSelect = document.getElementById('routine-select');
 const restInput = document.getElementById('rest-time');
 const currentExerciseDisplay = document.getElementById('current-exercise');
 const timerDisplay = document.getElementById('timer');
+const nextExerciseDisplay = document.getElementById('next-exercise');
 const progressBar = document.getElementById('progress-bar');
 
 const startResumeBtn = document.getElementById('start-resume-btn');
 const pauseBtn = document.getElementById('pause-btn');
 const resetBtn = document.getElementById('reset-btn');
 
-const beep = document.getElementById('beep-sound');  // Added beep audio element reference
+const beep = document.getElementById('beep-sound');
 
 let timerInterval = null;
 let isPaused = false;
@@ -20,6 +21,10 @@ let currentRoutine = null;
 let currentExerciseIndex = 0;
 let inRest = false;
 let restDuration = 0;
+
+let totalSets = 1;
+let currentSet = 1;
+let setRestDuration = 0;
 
 function loadRoutines() {
   routineSelect.innerHTML = "";
@@ -70,7 +75,10 @@ function saveRoutine() {
 
   if (exercises.length === 0) return alert("Add at least one valid exercise!");
 
-  routines[name] = exercises;
+  const sets = parseInt(document.getElementById('set-count').value) || 1;
+  const setRest = parseInt(document.getElementById('set-rest').value) || 0;
+
+  routines[name] = { exercises, sets, setRest };
   localStorage.setItem('routines', JSON.stringify(routines));
   loadRoutines();
   alert("Routine saved!");
@@ -88,6 +96,17 @@ function updateTimerDisplay(originalDuration) {
   progressBar.style.width = `${percent}%`;
 }
 
+function updateNextExercise() {
+  const next = currentRoutine[currentExerciseIndex];
+  if (next) {
+    nextExerciseDisplay.textContent = "Next: " + next.name + " (" + next.duration + "s)";
+  } else if (currentSet < totalSets) {
+    nextExerciseDisplay.textContent = "Next: Set Rest (" + setRestDuration + "s)";
+  } else {
+    nextExerciseDisplay.textContent = "";
+  }
+}
+
 function countdownStep(duration, label, callback) {
   secondsLeft = duration;
   updateTimerDisplay(duration);
@@ -100,10 +119,10 @@ function countdownStep(duration, label, callback) {
       // Play beep sound for last 3 seconds
       if (secondsLeft > 0 && secondsLeft <= 3) {
         try {
-          beep.currentTime = 0;  // Rewind to the start of the sound
-          beep.play();           // Play the beep sound
+          beep.currentTime = 0;
+          beep.play();
         } catch (e) {
-          console.error("Error playing sound:", e); // Error handling for audio issues
+          console.error("Error playing sound:", e);
         }
       }
 
@@ -112,7 +131,7 @@ function countdownStep(duration, label, callback) {
       if (secondsLeft <= 0) {
         clearInterval(timerInterval);
         timerInterval = null;
-        callback();  // Execute callback when timer ends
+        callback();
       }
     }
   }, 1000);
@@ -129,11 +148,15 @@ function startOrResumeRoutine() {
   const selected = routineSelect.value;
   if (!selected) return alert("Select a routine!");
 
-  currentRoutine = routines[selected];
+  const routineData = routines[selected];
+  currentRoutine = routineData.exercises;
+  totalSets = routineData.sets || 1;
+  setRestDuration = routineData.setRest || 0;
+  currentSet = 1;
+
   if (!currentRoutine || currentRoutine.length === 0) return alert("Routine has no exercises!");
 
   restDuration = parseInt(restInput.value) || 0;
-
   currentExerciseIndex = 0;
   inRest = false;
   isPaused = false;
@@ -149,32 +172,44 @@ function runNextStep() {
   if (!currentRoutine) return resetRoutine();
 
   if (currentExerciseIndex >= currentRoutine.length) {
-    currentExerciseDisplay.textContent = "Done!";
-    timerDisplay.textContent = "00:00";
-    progressBar.style.width = '100%';
-    progressBar.style.backgroundColor = '#28a745';  // Green color when done (exercise completed)
-
-    startResumeBtn.disabled = false;
-    startResumeBtn.innerHTML = "&#9654;"; // Reset to Start icon
-    pauseBtn.disabled = true;
-    resetBtn.disabled = true;
-
-    currentRoutine = null;
-    return;
+    if (currentSet < totalSets) {
+      // Finished one set, take set rest
+      currentSet++;
+      currentExerciseIndex = 0;
+      progressBar.style.backgroundColor = '#007bff'; // Blue for set rest
+      countdownStep(setRestDuration, "Set Rest (Set " + (currentSet - 1) + " done)", () => {
+        inRest = false;
+        runNextStep();
+      });
+      updateNextExercise();
+      return;
+    } else {
+      // All sets done
+      currentExerciseDisplay.textContent = "Workout Complete!";
+      timerDisplay.textContent = "00:00";
+      progressBar.style.width = '100%';
+      progressBar.style.backgroundColor = '#28a745';
+      nextExerciseDisplay.textContent = "";
+      startResumeBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resetBtn.disabled = true;
+      currentRoutine = null;
+      return;
+    }
   }
 
-  // When resting
   if (inRest && restDuration > 0) {
-    progressBar.style.backgroundColor = '#ffc107';  // Yellow during rest
+    progressBar.style.backgroundColor = '#ffc107'; // Yellow during rest
+    updateNextExercise();
     countdownStep(restDuration, "Rest", () => {
       inRest = false;
       runNextStep();
     });
   } else {
-    // During exercise
     const ex = currentRoutine[currentExerciseIndex];
-    progressBar.style.backgroundColor = '#28a745';  // Green during exercise
-    countdownStep(ex.duration, ex.name, () => {
+    progressBar.style.backgroundColor = '#28a745'; // Green during exercise
+    updateNextExercise();
+    countdownStep(ex.duration, ex.name + " (Set " + currentSet + " of " + totalSets + ")", () => {
       inRest = true;
       currentExerciseIndex++;
       runNextStep();
@@ -187,7 +222,7 @@ function pauseRoutine() {
   isPaused = true;
   pauseBtn.disabled = true;
   startResumeBtn.disabled = false;
-  startResumeBtn.innerHTML = "&#9654;"; // Resume icon
+  startResumeBtn.innerHTML = "&#9654;";
 }
 
 function resetRoutine() {
@@ -197,11 +232,13 @@ function resetRoutine() {
   currentExerciseIndex = 0;
   inRest = false;
   isPaused = false;
+  currentSet = 1;
 
   timerDisplay.textContent = "00:00";
   currentExerciseDisplay.textContent = "";
+  nextExerciseDisplay.textContent = "";
   progressBar.style.width = '0%';
-  progressBar.style.backgroundColor = '#28a745';  // Reset to green
+  progressBar.style.backgroundColor = '#28a745';
 
   startResumeBtn.disabled = false;
   startResumeBtn.innerHTML = "&#9654;";
