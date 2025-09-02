@@ -83,29 +83,21 @@ body {
   transition: width 0.1s linear;
 }
 
-.rest-label {
-  display: block;
-  margin-bottom: 0.3em;
-  font-weight: 600;
-}
-
 /* Routine creator */
 #routine-creator h2 {
   margin-top: 2rem;
   text-align: center;
 }
 
-.routine-header {
+.routine-row {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 0.5em;
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
 }
 
-.routine-header input {
-  flex: 1;
-  padding: 0.5em;
-  font-size: 1em;
+.routine-row label {
+  font-weight: 600;
 }
 
 input, select, button {
