@@ -15,7 +15,7 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Controls - reverted to rectangular buttons */
+/* Controls - rectangular buttons */
 .controls {
   display: flex;
   justify-content: center;
