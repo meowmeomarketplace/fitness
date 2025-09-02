@@ -50,7 +50,7 @@ body {
   text-align: center;
   margin-bottom: 0.3rem;
   min-height: 3rem;
-  white-space: pre-line; 
+  white-space: pre-line;
 }
 
 #timer {
@@ -82,7 +82,7 @@ body {
 #progress-bar {
   height: 100%;
   width: 0%;
-  background-color: #28a745; 
+  background-color: #28a745;
   transition: width 0.2s linear;
 }
 
