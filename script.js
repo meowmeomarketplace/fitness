@@ -13,7 +13,10 @@ const resetBtn = document.getElementById('reset-btn');
 
 const beep = document.getElementById('beep-sound');
 
+let timerInterval = null;
 let isPaused = false;
+let secondsLeft = 0;
+
 let currentRoutine = null;
 let currentExerciseIndex = 0;
 let currentSet = 1;
@@ -133,12 +136,11 @@ function runNextStep() {
   // Finished all exercises in current set
   if (currentExerciseIndex >= exercises.length) {
     if (currentSet < totalSets) {
-      // Rest between sets if applicable
       if (setRestDuration > 0) {
         inRest = true;
         restType = "set";
         nextExerciseDisplay.textContent = "";
-        countdownSmooth(setRestDuration, "Rest Between Sets", () => {
+        countdown(setRestDuration, "Rest Between Sets", "#007bff", () => {
           inRest = false;
           restType = "";
           currentExerciseIndex = 0;
@@ -154,7 +156,6 @@ function runNextStep() {
         return;
       }
     } else {
-      // Finished all sets
       currentExerciseDisplay.textContent = "Done!";
       timerDisplay.textContent = "00:00";
       progressBar.style.width = '100%';
@@ -173,24 +174,19 @@ function runNextStep() {
 
   if (inRest && restType === "exercise" && restDuration > 0) {
     nextExerciseDisplay.textContent = "Next: " + exercise.name;
-    progressBar.style.backgroundColor = '#ffc107';
-    countdownSmooth(restDuration, "Rest", () => {
+    countdown(restDuration, "Rest", "#ffc107", () => {
       inRest = false;
       restType = "";
       runNextStep();
     });
   } else {
-    // Exercise display with set number
     let label = "";
     if (totalSets > 1) label += `Set ${currentSet}\n`;
     label += exercise.name;
     currentExerciseDisplay.textContent = label;
     nextExerciseDisplay.textContent = "";
 
-    progressBar.style.backgroundColor = '#28a745';
-
-    countdownSmooth(exercise.duration, exercise.name, () => {
-      // After exercise, rest before next exercise if more exercises remain
+    countdown(exercise.duration, exercise.name, "#28a745", () => {
       currentExerciseIndex++;
       if (currentExerciseIndex < exercises.length && restDuration > 0) {
         inRest = true;
@@ -201,22 +197,20 @@ function runNextStep() {
   }
 }
 
-// Smooth countdown using requestAnimationFrame
-function countdownSmooth(duration, label, callback) {
-  const startTime = Date.now();
+// Countdown function with smooth progress
+function countdown(duration, label, color, callback) {
+  clearInterval(timerInterval);
+  let start = Date.now();
+  let end = start + duration * 1000;
+  progressBar.style.backgroundColor = color;
 
-  function update() {
-    if (isPaused) {
-      requestAnimationFrame(update);
-      return;
-    }
+  timerInterval = setInterval(() => {
+    if (isPaused) return;
+    let now = Date.now();
+    let remaining = Math.max(0, Math.round((end - now) / 1000));
+    let percent = Math.min(100, ((duration - remaining) / duration) * 100);
 
-    const now = Date.now();
-    const elapsed = (now - startTime) / 1000;
-    let remaining = Math.max(duration - elapsed, 0);
-    timerDisplay.textContent = formatTime(Math.ceil(remaining));
-
-    const percent = Math.min((elapsed / duration) * 100, 100);
+    timerDisplay.textContent = formatTime(remaining);
     progressBar.style.width = percent + "%";
 
     if (remaining <= 3 && remaining > 0) {
@@ -224,12 +218,11 @@ function countdownSmooth(duration, label, callback) {
     }
 
     if (remaining <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
       callback();
-    } else {
-      requestAnimationFrame(update);
     }
-  }
-  requestAnimationFrame(update);
+  }, 100);
 }
 
 // Pause routine
@@ -242,6 +235,8 @@ function pauseRoutine() {
 
 // Reset routine
 function resetRoutine() {
+  clearInterval(timerInterval);
+  timerInterval = null;
   isPaused = false;
   currentRoutine = null;
   currentExerciseIndex = 0;
