@@ -58,11 +58,24 @@ function addExercise() {
   durationInput.value = 30;
   durationInput.min = 1;
 
+  const deleteBtn = document.createElement('button');
+  deleteBtn.type = 'button';
+  deleteBtn.className = 'delete-exercise';
+  deleteBtn.textContent = "X";
+  deleteBtn.onclick = () => container.remove();
+
   container.appendChild(nameInput);
   container.appendChild(label);
   container.appendChild(durationInput);
+  container.appendChild(deleteBtn);
 
   document.getElementById('exercise-list').appendChild(container);
+}
+
+// Delete an exercise row (for existing HTML rows)
+function deleteExercise(button) {
+  const item = button.parentElement;
+  item.remove();
 }
 
 // Save Routine
@@ -133,7 +146,6 @@ function startOrResumeRoutine() {
 function runNextStep() {
   if (!currentRoutine) return resetRoutine();
 
-  // End of all sets
   if (currentSet > totalSets) {
     currentExerciseDisplay.textContent = "Done!";
     nextExerciseDisplay.textContent = "";
@@ -147,13 +159,11 @@ function runNextStep() {
     return;
   }
 
-  // Set rest between full sets
   if (currentExerciseIndex === 0 && inRest && setRestDuration > 0) {
     startCountdown(setRestDuration, "Rest", "setRest");
     return;
   }
 
-  // End of current set
   if (currentExerciseIndex >= currentRoutine.length) {
     if (currentSet < totalSets) {
       inRest = true;
@@ -167,11 +177,9 @@ function runNextStep() {
     return;
   }
 
-  // Normal exercise
   const ex = currentRoutine[currentExerciseIndex];
   const label = (totalSets > 1 ? `Set ${currentSet}\n` : "") + ex.name;
 
-  // Show next exercise only during rest between exercises
   let nextLabel = "";
   if (inRest && currentExerciseIndex + 1 < currentRoutine.length) {
     nextLabel = currentRoutine[currentExerciseIndex + 1].name;
@@ -191,7 +199,7 @@ function startCountdown(duration, label, type = "exercise") {
 
   if (type === "exercise") progressBar.style.backgroundColor = "#28a745";
   else if (type === "setRest") progressBar.style.backgroundColor = "#007bff";
-  else progressBar.style.backgroundColor = "#ffc107"; // rest between exercises
+  else progressBar.style.backgroundColor = "#ffc107";
 
   currentExerciseDisplay.textContent = label;
 
@@ -207,12 +215,8 @@ function startCountdown(duration, label, type = "exercise") {
     const percent = ((durationSeconds - secondsLeft) / durationSeconds) * 100;
     progressBar.style.width = `${percent}%`;
 
-    // Beep in last 3 seconds
     if (secondsLeft <= 3 && secondsLeft > 0) {
-      try {
-        beep.currentTime = 0;
-        beep.play();
-      } catch {}
+      try { beep.currentTime = 0; beep.play(); } catch {}
     }
 
     if (secondsLeft > 0) {
@@ -220,7 +224,6 @@ function startCountdown(duration, label, type = "exercise") {
     } else {
       cancelAnimationFrame(animationId);
       animationId = null;
-      // Move to next
       if (type === "exercise") {
         inRest = true;
         currentExerciseIndex++;
