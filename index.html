@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Purrfect Fitness</title>
+  <title>Fitness Timer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -30,6 +30,7 @@
     <section id="routine-creator">
       <h2>Create Routine</h2>
       <input type="text" id="routine-name" placeholder="Routine Name" />
+
       <div id="exercise-list">
         <div class="exercise-item">
           <input type="text" class="exercise-name" placeholder="Exercise Name" />
@@ -37,9 +38,13 @@
           <input type="number" class="exercise-duration" value="30" min="1" />
         </div>
       </div>
+
       <button type="button" onclick="addExercise()">+ Add Exercise</button>
+
+      <!-- Clear inputs for sets -->
       <input type="number" id="set-count" placeholder="Number of Sets" min="1" value="1" />
       <input type="number" id="set-rest" placeholder="Rest Between Sets (seconds)" min="0" value="0" />
+
       <button type="button" onclick="saveRoutine()">Save Routine</button>
     </section>
 
