@@ -21,7 +21,7 @@ let currentExerciseIndex = 0;
 let currentSet = 1;
 let totalSets = 1;
 let inRest = false;
-let restType = ""; // "exercise" or "set"
+let restType = "";
 let restDuration = 0;
 let setRestDuration = 0;
 let startTime = null;
@@ -39,7 +39,6 @@ function loadRoutines() {
 }
 loadRoutines();
 
-// Add exercise
 function addExercise() {
   const container = document.createElement('div');
   container.className = 'exercise-item';
@@ -65,7 +64,6 @@ function addExercise() {
   document.getElementById('exercise-list').appendChild(container);
 }
 
-// Save routine
 function saveRoutine() {
   const name = document.getElementById('routine-name').value.trim();
   if (!name) return alert("Enter a routine name!");
@@ -88,14 +86,12 @@ function saveRoutine() {
   alert("Routine saved!");
 }
 
-// Format seconds to MM:SS
 function formatTime(seconds) {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
   const s = (seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 }
 
-// Start/resume routine
 function startOrResumeRoutine() {
   if (isPaused && currentRoutine) {
     isPaused = false;
@@ -129,7 +125,6 @@ function startOrResumeRoutine() {
   runNextStep();
 }
 
-// Run next step (exercise/rest/set)
 function runNextStep() {
   if (!currentRoutine) return resetRoutine();
 
@@ -196,7 +191,6 @@ function runNextStep() {
   }
 }
 
-// Countdown with requestAnimationFrame for smooth progress
 function startCountdown(duration, label, color, callback) {
   cancelAnimationFrame(animationId);
   durationSeconds = duration;
@@ -229,7 +223,6 @@ function startCountdown(duration, label, color, callback) {
   animationId = requestAnimationFrame(step);
 }
 
-// Pause routine
 function pauseRoutine() {
   isPaused = true;
   pauseBtn.disabled = true;
@@ -237,7 +230,6 @@ function pauseRoutine() {
   startResumeBtn.innerHTML = "&#9654;";
 }
 
-// Reset routine
 function resetRoutine() {
   cancelAnimationFrame(animationId);
   animationId = null;
@@ -258,7 +250,6 @@ function resetRoutine() {
   resetBtn.disabled = true;
 }
 
-// Delete routine
 function deleteRoutine() {
   const selected = routineSelect.value;
   if (!selected) return alert("Select a routine to delete!");
@@ -269,5 +260,4 @@ function deleteRoutine() {
   resetRoutine();
 }
 
-// Initial exercise
 if (document.querySelectorAll('.exercise-item').length === 0) addExercise();
