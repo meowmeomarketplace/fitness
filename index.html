@@ -9,7 +9,7 @@
 <body>
   <div class="app">
     <section id="routine-runner">
-      <!-- Combined Start/Resume Button -->
+      <!-- Controls -->
       <div class="controls">
         <button id="start-resume-btn" onclick="startOrResumeRoutine()" title="Start">&#9654;</button>
         <button id="pause-btn" onclick="pauseRoutine()" title="Pause" disabled>&#10073;&#10073;</button>
@@ -18,10 +18,13 @@
 
       <div id="current-exercise"></div>
       <div id="timer">00:00</div>
+      <div id="next-exercise"></div>
+
       <div id="progress-bar-container">
         <div id="progress-bar"></div>
       </div>
-      <label for="rest-time" class="rest-label">Rest time (seconds):</label>
+
+      <label for="rest-time" class="rest-label">Rest time between exercises (seconds):</label>
       <input type="number" id="rest-time" value="15" min="0" />
     </section>
 
@@ -29,6 +32,7 @@
     <section id="routine-creator">
       <h2>Create Routine</h2>
       <input type="text" id="routine-name" placeholder="Routine Name" />
+
       <div id="exercise-list">
         <div class="exercise-item">
           <input type="text" class="exercise-name" placeholder="Exercise Name" />
@@ -36,7 +40,15 @@
           <input type="number" class="exercise-duration" value="30" min="1" />
         </div>
       </div>
+
       <button type="button" onclick="addExercise()">+ Add Exercise</button>
+
+      <label for="set-count">Number of Sets:</label>
+      <input type="number" id="set-count" value="1" min="1" />
+
+      <label for="set-rest">Rest Between Sets (seconds):</label>
+      <input type="number" id="set-rest" value="60" min="0" />
+
       <button type="button" onclick="saveRoutine()">Save Routine</button>
     </section>
 
@@ -49,7 +61,7 @@
 
   <script src="script.js"></script>
 
-  <!-- Add your countdown beep sound here -->
+  <!-- Countdown beep sound -->
   <audio id="beep-sound" src="countdown.wav" preload="auto"></audio>
 </body>
 </html>
