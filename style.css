@@ -15,7 +15,7 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Controls */
+/* Controls - reverted to rectangular buttons */
 .controls {
   display: flex;
   justify-content: center;
@@ -24,30 +24,23 @@ body {
 }
 
 .controls button {
-  background: #eee;
-  border: 2px solid #ccc;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  background: none;
+  border: none;
+  font-size: 2rem;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+  color: #333;
+  transition: transform 0.1s ease;
+  border-radius: 4px;
+  padding: 0.5em 1em;
 }
 
 .controls button:disabled {
   color: #ccc;
   cursor: not-allowed;
-  background: #f8f8f8;
 }
 
 .controls button:hover:not(:disabled) {
-  transform: scale(1.15);
-  background: #ddd;
+  transform: scale(1.1);
 }
 
 /* Timer and progress */
@@ -56,7 +49,8 @@ body {
   font-weight: 600;
   text-align: center;
   margin-bottom: 0.3rem;
-  min-height: 2.2rem;
+  min-height: 2.8rem;
+  white-space: pre-line; /* allow set + name on separate lines */
 }
 
 #timer {
