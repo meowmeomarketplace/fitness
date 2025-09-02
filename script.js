@@ -3,9 +3,10 @@ let routines = JSON.parse(localStorage.getItem('routines')) || {};
 const routineSelect = document.getElementById('routine-select');
 const restInput = document.getElementById('rest-time');
 const currentExerciseDisplay = document.getElementById('current-exercise');
-const timerDisplay = document.getElementById('timer');
 const nextExerciseDisplay = document.getElementById('next-exercise');
+const timerDisplay = document.getElementById('timer');
 const progressBar = document.getElementById('progress-bar');
+const saveFeedback = document.getElementById('save-feedback');
 
 const startResumeBtn = document.getElementById('start-resume-btn');
 const pauseBtn = document.getElementById('pause-btn');
@@ -23,7 +24,6 @@ let totalSets = 1;
 let inRest = false;
 let restType = "";
 let restDuration = 0;
-let setRestDuration = 0;
 let startTime = null;
 let durationSeconds = 0;
 
@@ -39,6 +39,7 @@ function loadRoutines() {
 }
 loadRoutines();
 
+// Add Exercise
 function addExercise() {
   const container = document.createElement('div');
   container.className = 'exercise-item';
@@ -64,6 +65,7 @@ function addExercise() {
   document.getElementById('exercise-list').appendChild(container);
 }
 
+// Save Routine
 function saveRoutine() {
   const name = document.getElementById('routine-name').value.trim();
   if (!name) return alert("Enter a routine name!");
@@ -83,40 +85,42 @@ function saveRoutine() {
   routines[name] = { exercises, sets, setRest };
   localStorage.setItem('routines', JSON.stringify(routines));
   loadRoutines();
-  alert("Routine saved!");
+
+  saveFeedback.textContent = "Routine saved successfully!";
+  setTimeout(() => saveFeedback.textContent = "", 3000);
 }
 
+// Format time
 function formatTime(seconds) {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
   const s = (seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 }
 
+// Start or Resume
 function startOrResumeRoutine() {
   if (isPaused && currentRoutine) {
     isPaused = false;
-    pauseBtn.disabled = false;
     startResumeBtn.disabled = true;
-    animateTimer();
+    pauseBtn.disabled = false;
+    startCountdown();
     return;
   }
 
   const selected = routineSelect.value;
   if (!selected) return alert("Select a routine!");
 
-  const routineObj = routines[selected];
-  if (!routineObj || !routineObj.exercises.length) return alert("Routine has no exercises!");
+  const routineData = routines[selected];
+  if (!routineData || routineData.exercises.length === 0) return alert("Routine has no exercises!");
 
-  currentRoutine = routineObj;
-  totalSets = routineObj.sets || 1;
-  setRestDuration = routineObj.setRest || 0;
+  currentRoutine = routineData.exercises;
+  totalSets = routineData.sets;
+  setRestDuration = routineData.setRest;
   restDuration = parseInt(restInput.value) || 0;
 
   currentExerciseIndex = 0;
   currentSet = 1;
   inRest = false;
-  restType = "";
-  isPaused = false;
 
   startResumeBtn.disabled = true;
   pauseBtn.disabled = false;
@@ -125,135 +129,148 @@ function startOrResumeRoutine() {
   runNextStep();
 }
 
+// Run next step
 function runNextStep() {
   if (!currentRoutine) return resetRoutine();
 
-  const exercises = currentRoutine.exercises;
-
-  if (currentExerciseIndex >= exercises.length) {
-    if (currentSet < totalSets) {
-      if (setRestDuration > 0) {
-        inRest = true;
-        restType = "set";
-        startCountdown(setRestDuration, "Rest", "#007bff", () => {
-          inRest = false;
-          restType = "";
-          currentExerciseIndex = 0;
-          currentSet++;
-          runNextStep();
-        });
-        return;
-      } else {
-        currentSet++;
-        currentExerciseIndex = 0;
-        runNextStep();
-        return;
-      }
-    } else {
-      currentExerciseDisplay.textContent = "Done!";
-      timerDisplay.textContent = "00:00";
-      progressBar.style.width = '100%';
-      progressBar.style.backgroundColor = '#28a745';
-      nextExerciseDisplay.textContent = "";
-      startResumeBtn.disabled = false;
-      startResumeBtn.innerHTML = "&#9654;";
-      pauseBtn.disabled = true;
-      resetBtn.disabled = true;
-      currentRoutine = null;
-      return;
-    }
-  }
-
-  const exercise = exercises[currentExerciseIndex];
-
-  if (inRest && restType === "exercise" && restDuration > 0) {
-    nextExerciseDisplay.textContent = "Next: " + exercise.name;
-    startCountdown(restDuration, "Rest", "#ffc107", () => {
-      inRest = false;
-      restType = "";
-      runNextStep();
-    });
-  } else {
-    let label = "";
-    if (totalSets > 1) label += `Set ${currentSet}\n`;
-    label += exercise.name;
-    currentExerciseDisplay.textContent = label;
+  // End of all sets
+  if (currentSet > totalSets) {
+    currentExerciseDisplay.textContent = "Done!";
     nextExerciseDisplay.textContent = "";
-
-    startCountdown(exercise.duration, exercise.name, "#28a745", () => {
-      currentExerciseIndex++;
-      if (currentExerciseIndex < exercises.length && restDuration > 0) {
-        inRest = true;
-        restType = "exercise";
-      }
-      runNextStep();
-    });
+    timerDisplay.textContent = "00:00";
+    progressBar.style.width = "100%";
+    progressBar.style.backgroundColor = "#28a745";
+    startResumeBtn.disabled = false;
+    pauseBtn.disabled = true;
+    resetBtn.disabled = true;
+    currentRoutine = null;
+    return;
   }
+
+  // Set rest between full sets
+  if (currentExerciseIndex === 0 && inRest && setRestDuration > 0) {
+    startCountdown(setRestDuration, "Rest", "setRest");
+    return;
+  }
+
+  // End of current set
+  if (currentExerciseIndex >= currentRoutine.length) {
+    if (currentSet < totalSets) {
+      inRest = true;
+      currentExerciseIndex = 0;
+      currentSet++;
+      startCountdown(setRestDuration, "Rest", "setRest");
+    } else {
+      currentSet++;
+      runNextStep();
+    }
+    return;
+  }
+
+  // Normal exercise
+  const ex = currentRoutine[currentExerciseIndex];
+  const label = (totalSets > 1 ? `Set ${currentSet}\n` : "") + ex.name;
+
+  // Show next exercise only during rest between exercises
+  let nextLabel = "";
+  if (inRest && currentExerciseIndex + 1 < currentRoutine.length) {
+    nextLabel = currentRoutine[currentExerciseIndex + 1].name;
+  }
+
+  nextExerciseDisplay.textContent = nextLabel;
+
+  startCountdown(ex.duration, label, "exercise");
 }
 
-function startCountdown(duration, label, color, callback) {
-  cancelAnimationFrame(animationId);
+// Countdown
+function startCountdown(duration, label, type = "exercise") {
   durationSeconds = duration;
-  startTime = null;
-  progressBar.style.backgroundColor = color;
-  timerDisplay.textContent = formatTime(duration);
+  startTime = performance.now();
+  inRest = (type !== "exercise") ? true : false;
+  restType = type;
+
+  if (type === "exercise") progressBar.style.backgroundColor = "#28a745";
+  else if (type === "setRest") progressBar.style.backgroundColor = "#007bff";
+  else progressBar.style.backgroundColor = "#ffc107"; // rest between exercises
+
   currentExerciseDisplay.textContent = label;
 
-  function step(timestamp) {
-    if (!startTime) startTime = timestamp;
-    const elapsed = (timestamp - startTime) / 1000;
+  function update() {
+    if (isPaused) {
+      animationId = requestAnimationFrame(update);
+      return;
+    }
 
-    if (!isPaused) {
-      const remaining = Math.max(0, duration - elapsed);
-      timerDisplay.textContent = formatTime(Math.ceil(remaining));
-      const percent = Math.min((elapsed / duration) * 100, 100);
-      progressBar.style.width = percent + "%";
+    const elapsed = (performance.now() - startTime) / 1000;
+    let secondsLeft = Math.max(durationSeconds - elapsed, 0);
+    timerDisplay.textContent = formatTime(Math.ceil(secondsLeft));
+    const percent = ((durationSeconds - secondsLeft) / durationSeconds) * 100;
+    progressBar.style.width = `${percent}%`;
 
-      if (remaining <= 3 && remaining > 0) {
-        try { beep.currentTime = 0; beep.play(); } catch {}
-      }
+    // Beep in last 3 seconds
+    if (secondsLeft <= 3 && secondsLeft > 0) {
+      try {
+        beep.currentTime = 0;
+        beep.play();
+      } catch {}
+    }
 
-      if (remaining <= 0) {
-        callback();
-        return;
+    if (secondsLeft > 0) {
+      animationId = requestAnimationFrame(update);
+    } else {
+      cancelAnimationFrame(animationId);
+      animationId = null;
+      // Move to next
+      if (type === "exercise") {
+        inRest = true;
+        currentExerciseIndex++;
+        if (restDuration > 0) startCountdown(restDuration, currentRoutine[currentExerciseIndex]?.name || "", "exerciseRest");
+        else runNextStep();
+      } else {
+        inRest = false;
+        runNextStep();
       }
     }
-    animationId = requestAnimationFrame(step);
   }
-  animationId = requestAnimationFrame(step);
+
+  animationId = requestAnimationFrame(update);
 }
 
+// Pause
 function pauseRoutine() {
+  if (!animationId) return;
   isPaused = true;
   pauseBtn.disabled = true;
   startResumeBtn.disabled = false;
-  startResumeBtn.innerHTML = "&#9654;";
 }
 
+// Reset
 function resetRoutine() {
   cancelAnimationFrame(animationId);
   animationId = null;
-  isPaused = false;
   currentRoutine = null;
   currentExerciseIndex = 0;
   currentSet = 1;
   inRest = false;
-  restType = "";
+  isPaused = false;
+
   timerDisplay.textContent = "00:00";
   currentExerciseDisplay.textContent = "";
   nextExerciseDisplay.textContent = "";
-  progressBar.style.width = '0%';
-  progressBar.style.backgroundColor = '#28a745';
+  progressBar.style.width = "0%";
+  progressBar.style.backgroundColor = "#28a745";
+
   startResumeBtn.disabled = false;
-  startResumeBtn.innerHTML = "&#9654;";
   pauseBtn.disabled = true;
   resetBtn.disabled = true;
 }
 
+// Delete routine
 function deleteRoutine() {
   const selected = routineSelect.value;
   if (!selected) return alert("Select a routine to delete!");
   if (!confirm(`Delete routine "${selected}"?`)) return;
+
   delete routines[selected];
   localStorage.setItem('routines', JSON.stringify(routines));
   loadRoutines();
