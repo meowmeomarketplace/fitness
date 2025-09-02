@@ -30,8 +30,6 @@ body {
   cursor: pointer;
   color: #333;
   transition: transform 0.1s ease;
-  border-radius: 4px;
-  padding: 0.5em 1em;
 }
 
 .controls button:disabled {
@@ -40,7 +38,7 @@ body {
 }
 
 .controls button:hover:not(:disabled) {
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 
 /* Timer and progress */
@@ -49,25 +47,24 @@ body {
   font-weight: 600;
   text-align: center;
   margin-bottom: 0.3rem;
-  min-height: 3rem;
+  min-height: 2.2rem;
   white-space: pre-line;
+}
+
+#next-exercise {
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 #timer {
   font-size: 4rem;
   font-weight: 900;
   text-align: center;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.7rem;
   font-family: 'Courier New', Courier, monospace;
   letter-spacing: 4px;
-}
-
-#next-exercise {
-  font-size: 1.2rem;
-  text-align: center;
-  color: #555;
-  margin-bottom: 1rem;
-  min-height: 1.5rem;
 }
 
 #progress-bar-container {
