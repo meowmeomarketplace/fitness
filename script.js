@@ -90,33 +90,6 @@ function formatTime(seconds) {
   return `${m}:${s}`;
 }
 
-function updateTimerDisplay(originalDuration) {
-  timerDisplay.textContent = formatTime(secondsLeft);
-  const percent = ((originalDuration - secondsLeft) / originalDuration) * 100;
-  progressBar.style.width = `${percent}%`;
-}
-
-function countdownStep(duration, label, callback) {
-  secondsLeft = duration;
-  updateTimerDisplay(duration);
-  currentExerciseDisplay.textContent = label;
-
-  timerInterval = setInterval(() => {
-    if (!isPaused) {
-      secondsLeft--;
-      if (secondsLeft > 0 && secondsLeft <= 3) {
-        try { beep.currentTime = 0; beep.play(); } catch (e) {}
-      }
-      updateTimerDisplay(duration);
-      if (secondsLeft <= 0) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        callback();
-      }
-    }
-  }, 1000);
-}
-
 function startOrResumeRoutine() {
   if (isPaused && currentRoutine) {
     isPaused = false;
@@ -154,6 +127,7 @@ function runNextStep() {
 
   const exercises = currentRoutine.exercises;
 
+  // Completed all exercises in current set
   if (currentExerciseIndex >= exercises.length) {
     if (currentSet < totalSets) {
       currentSet++;
@@ -182,27 +156,53 @@ function runNextStep() {
     progressBar.style.backgroundColor = '#ffc107';
     const nextEx = exercises[currentExerciseIndex];
     nextExerciseDisplay.textContent = "Next: " + (nextEx ? nextEx.name : "");
-    countdownStep(restDuration, "Rest", () => {
+    countdownSmooth(restDuration, "Rest", () => {
       inRest = false;
       runNextStep();
     });
   } else {
+    // Exercise display with set number
     let label = "";
     if (totalSets > 1) label += `Set ${currentSet}\n`;
     label += ex.name;
-
     currentExerciseDisplay.textContent = label;
-
-    const nextEx = exercises[currentExerciseIndex + 1];
-    nextExerciseDisplay.textContent = nextEx ? "Next: " + nextEx.name : "";
+    nextExerciseDisplay.textContent = ""; // only show during rest
 
     progressBar.style.backgroundColor = '#28a745';
-    countdownStep(ex.duration, ex.name, () => {
+    countdownSmooth(ex.duration, ex.name, () => {
       inRest = true;
       currentExerciseIndex++;
       runNextStep();
     });
   }
+}
+
+// Smooth countdown function for continuous progress
+function countdownSmooth(duration, label, callback) {
+  const startTime = Date.now();
+  const endTime = startTime + duration * 1000;
+
+  function update() {
+    if (isPaused) {
+      requestAnimationFrame(update);
+      return;
+    }
+
+    const now = Date.now();
+    const elapsed = (now - startTime) / 1000;
+    secondsLeft = Math.max(Math.ceil(duration - elapsed), 0);
+    timerDisplay.textContent = formatTime(secondsLeft);
+
+    const percent = Math.min((elapsed / duration) * 100, 100);
+    progressBar.style.width = percent + "%";
+
+    if (secondsLeft <= 0) {
+      callback();
+    } else {
+      requestAnimationFrame(update);
+    }
+  }
+  requestAnimationFrame(update);
 }
 
 function pauseRoutine() {
