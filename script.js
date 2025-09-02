@@ -13,9 +13,8 @@ const resetBtn = document.getElementById('reset-btn');
 
 const beep = document.getElementById('beep-sound');
 
-let timerInterval = null;
 let isPaused = false;
-let secondsLeft = 0;
+let animationId = null;
 
 let currentRoutine = null;
 let currentExerciseIndex = 0;
@@ -25,8 +24,10 @@ let inRest = false;
 let restType = ""; // "exercise" or "set"
 let restDuration = 0;
 let setRestDuration = 0;
+let startTime = null;
+let durationSeconds = 0;
 
-// Load routines from localStorage
+// Load routines
 function loadRoutines() {
   routineSelect.innerHTML = "";
   Object.keys(routines).forEach(name => {
@@ -38,7 +39,7 @@ function loadRoutines() {
 }
 loadRoutines();
 
-// Add exercise input
+// Add exercise
 function addExercise() {
   const container = document.createElement('div');
   container.className = 'exercise-item';
@@ -94,12 +95,13 @@ function formatTime(seconds) {
   return `${m}:${s}`;
 }
 
-// Start or resume routine
+// Start/resume routine
 function startOrResumeRoutine() {
   if (isPaused && currentRoutine) {
     isPaused = false;
     pauseBtn.disabled = false;
     startResumeBtn.disabled = true;
+    animateTimer();
     return;
   }
 
@@ -133,14 +135,12 @@ function runNextStep() {
 
   const exercises = currentRoutine.exercises;
 
-  // Finished all exercises in current set
   if (currentExerciseIndex >= exercises.length) {
     if (currentSet < totalSets) {
       if (setRestDuration > 0) {
         inRest = true;
         restType = "set";
-        nextExerciseDisplay.textContent = "";
-        countdown(setRestDuration, "Rest Between Sets", "#007bff", () => {
+        startCountdown(setRestDuration, "Rest", "#007bff", () => {
           inRest = false;
           restType = "";
           currentExerciseIndex = 0;
@@ -151,7 +151,6 @@ function runNextStep() {
       } else {
         currentSet++;
         currentExerciseIndex = 0;
-        inRest = false;
         runNextStep();
         return;
       }
@@ -174,7 +173,7 @@ function runNextStep() {
 
   if (inRest && restType === "exercise" && restDuration > 0) {
     nextExerciseDisplay.textContent = "Next: " + exercise.name;
-    countdown(restDuration, "Rest", "#ffc107", () => {
+    startCountdown(restDuration, "Rest", "#ffc107", () => {
       inRest = false;
       restType = "";
       runNextStep();
@@ -186,7 +185,7 @@ function runNextStep() {
     currentExerciseDisplay.textContent = label;
     nextExerciseDisplay.textContent = "";
 
-    countdown(exercise.duration, exercise.name, "#28a745", () => {
+    startCountdown(exercise.duration, exercise.name, "#28a745", () => {
       currentExerciseIndex++;
       if (currentExerciseIndex < exercises.length && restDuration > 0) {
         inRest = true;
@@ -197,32 +196,37 @@ function runNextStep() {
   }
 }
 
-// Countdown function with smooth progress
-function countdown(duration, label, color, callback) {
-  clearInterval(timerInterval);
-  let start = Date.now();
-  let end = start + duration * 1000;
+// Countdown with requestAnimationFrame for smooth progress
+function startCountdown(duration, label, color, callback) {
+  cancelAnimationFrame(animationId);
+  durationSeconds = duration;
+  startTime = null;
   progressBar.style.backgroundColor = color;
+  timerDisplay.textContent = formatTime(duration);
+  currentExerciseDisplay.textContent = label;
 
-  timerInterval = setInterval(() => {
-    if (isPaused) return;
-    let now = Date.now();
-    let remaining = Math.max(0, Math.round((end - now) / 1000));
-    let percent = Math.min(100, ((duration - remaining) / duration) * 100);
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const elapsed = (timestamp - startTime) / 1000;
 
-    timerDisplay.textContent = formatTime(remaining);
-    progressBar.style.width = percent + "%";
+    if (!isPaused) {
+      const remaining = Math.max(0, duration - elapsed);
+      timerDisplay.textContent = formatTime(Math.ceil(remaining));
+      const percent = Math.min((elapsed / duration) * 100, 100);
+      progressBar.style.width = percent + "%";
 
-    if (remaining <= 3 && remaining > 0) {
-      try { beep.currentTime = 0; beep.play(); } catch {}
+      if (remaining <= 3 && remaining > 0) {
+        try { beep.currentTime = 0; beep.play(); } catch {}
+      }
+
+      if (remaining <= 0) {
+        callback();
+        return;
+      }
     }
-
-    if (remaining <= 0) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      callback();
-    }
-  }, 100);
+    animationId = requestAnimationFrame(step);
+  }
+  animationId = requestAnimationFrame(step);
 }
 
 // Pause routine
@@ -235,8 +239,8 @@ function pauseRoutine() {
 
 // Reset routine
 function resetRoutine() {
-  clearInterval(timerInterval);
-  timerInterval = null;
+  cancelAnimationFrame(animationId);
+  animationId = null;
   isPaused = false;
   currentRoutine = null;
   currentExerciseIndex = 0;
@@ -265,5 +269,5 @@ function deleteRoutine() {
   resetRoutine();
 }
 
-// Add initial exercise if none exists
+// Initial exercise
 if (document.querySelectorAll('.exercise-item').length === 0) addExercise();
