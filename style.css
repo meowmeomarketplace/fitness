@@ -86,8 +86,19 @@ body {
 #progress-bar {
   height: 100%;
   width: 0%;
-  background-color: #28a745;
-  transition: width 0.1s linear;
+  transition: width 1s linear;  /* smoother, less jumpy */
+}
+
+#progress-bar.exercise {
+  background-color: #28a745;  /* green */
+}
+
+#progress-bar.rest-exercise {
+  background-color: #ffc107;  /* yellow */
+}
+
+#progress-bar.rest-set {
+  background-color: #007bff;  /* blue */
 }
 
 /* Routine creator */
@@ -175,4 +186,5 @@ input, select, button {
 #routine-manager select {
   flex-grow: 1;
 }
+
 
