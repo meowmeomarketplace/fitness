@@ -116,7 +116,10 @@ input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-siz
 }
 
 .exercise-header span:first-child { flex: 2; }  /* aligns with exercise name input */
-.exercise-header span:last-child { flex: 1; text-align: left; }  /* aligns with duration input */
+.exercise-header span:last-child {
+  flex: 1;
+  text-align: left; /* left-align the Duration (sec) label */
+}
 
 .exercise-item {
   display: flex;
