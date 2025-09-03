@@ -116,7 +116,7 @@ function loadExercise() {
       timeLeft = routine.setRest;
       totalTime = timeLeft;
       routineIndex = 0;
-      updateDisplay("Rest", true); // true = set rest
+      updateDisplay("Rest", true);
       startTimer();
       return;
     } else {
@@ -130,7 +130,7 @@ function loadExercise() {
 
   if (isRest) {
     isRest = false;
-    setIndex++; // increment set after set rest
+    setIndex++;
     loadExercise();
     return;
   }
@@ -143,11 +143,21 @@ function loadExercise() {
 
 function startTimer() {
   clearInterval(timer);
+  const startTime = Date.now();
+  const endTime = startTime + timeLeft * 1000;
+  const progressBar = document.getElementById("progress-bar");
+
   timer = setInterval(() => {
-    timeLeft--;
+    const now = Date.now();
+    const remainingMs = Math.max(0, endTime - now);
+    timeLeft = Math.ceil(remainingMs / 1000);
     updateTimer();
 
-    if (timeLeft <= 0) {
+    // Smooth progress
+    const elapsed = (totalTime * 1000 - remainingMs) / (totalTime * 1000);
+    progressBar.style.width = Math.min(elapsed * 100, 100) + "%";
+
+    if (remainingMs <= 0) {
       clearInterval(timer);
       if (isRest) { isRest = false; loadExercise(); }
       else {
@@ -163,7 +173,7 @@ function startTimer() {
         }
       }
     }
-  }, 1000);
+  }, 50);
   updateTimer();
 }
 
@@ -171,18 +181,16 @@ function updateTimer() {
   const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
   const seconds = String(timeLeft % 60).padStart(2, "0");
   document.getElementById("timer").textContent = `${minutes}:${seconds}`;
-  const percent = totalTime > 0 ? ((totalTime - timeLeft) / totalTime) * 100 : 0;
-  document.getElementById("progress-bar").style.width = percent + "%";
 }
 
 function updateDisplay(name, isSetRest = false) {
   const progressBar = document.getElementById("progress-bar");
-  progressBar.className = "";
 
   document.getElementById("current-set").textContent = `Set ${setIndex} of ${routine.sets}`;
   document.getElementById("current-exercise").textContent = name;
 
-  // Progress bar color
+  // Set progress bar color (once, color persists)
+  progressBar.className = "";
   if (name === "Rest") {
     if (isSetRest) progressBar.classList.add("rest-set");
     else progressBar.classList.add("rest-exercise");
@@ -190,7 +198,7 @@ function updateDisplay(name, isSetRest = false) {
     progressBar.classList.add("exercise");
   }
 
-  // Next exercise text
+  // Next exercise
   let nextText = "";
   if (name === "Rest") {
     nextText = isSetRest ? `Next: ${routine.exercises[0].name}` :
