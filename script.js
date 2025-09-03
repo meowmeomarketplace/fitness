@@ -1,213 +1,177 @@
-let routines = JSON.parse(localStorage.getItem("routines")) || [];
-let currentRoutine = null;
-let currentExerciseIndex = 0;
-let timerInterval = null;
-let remainingTime = 0;
-let inRest = false;
+let routine = [];
+let currentIndex = 0;
+let timer;
+let timeLeft;
+let isRunning = false;
+let sets = 1;
 let currentSet = 1;
+let restBetweenSets = 0;
+let restBetweenExercises = 0;
+let inRest = false;
 
-function startOrResumeRoutine() {
-  if (!currentRoutine) {
-    alert("Please select a routine first!");
-    return;
-  }
-  document.getElementById("start-resume-btn").disabled = true;
-  document.getElementById("pause-btn").disabled = false;
+const currentExerciseEl = document.getElementById("current-exercise");
+const nextExerciseEl = document.getElementById("next-exercise");
+const timerEl = document.getElementById("timer");
+const progressBar = document.getElementById("progress-bar");
+const setInfoEl = document.getElementById("set-info");
 
-  if (remainingTime <= 0) {
-    startExercise();
-  } else {
-    resumeTimer();
-  }
-}
-
-function pauseRoutine() {
-  clearInterval(timerInterval);
-  document.getElementById("pause-btn").disabled = true;
-  document.getElementById("start-resume-btn").disabled = false;
-}
-
-function resetRoutine() {
-  clearInterval(timerInterval);
-  currentExerciseIndex = 0;
+// Start routine
+function startRoutine() {
+  if (routine.length === 0) return;
+  currentIndex = 0;
   currentSet = 1;
-  inRest = false;
-  remainingTime = 0;
-  document.getElementById("timer").textContent = "00:00";
-  document.getElementById("progress-bar").style.width = "0";
-  document.getElementById("current-exercise").textContent = "";
-  document.getElementById("next-exercise").textContent = "";
-  document.getElementById("set-info").textContent = "";
-  document.getElementById("pause-btn").disabled = true;
-  document.getElementById("start-resume-btn").disabled = false;
+  isRunning = true;
+  startExercise();
 }
 
+// Start an exercise
 function startExercise() {
-  if (currentExerciseIndex >= currentRoutine.exercises.length) {
-    if (currentSet < currentRoutine.sets) {
-      currentSet++;
-      currentExerciseIndex = 0;
-      inRest = true;
-      remainingTime = currentRoutine.setRest;
-      updateExerciseDisplay();
-      startTimer();
-    } else {
-      resetRoutine();
-      alert("Routine Complete!");
-    }
-    return;
-  }
-
   inRest = false;
-  remainingTime = currentRoutine.exercises[currentExerciseIndex].duration;
-  updateExerciseDisplay();
-  startTimer();
-}
+  const exercise = routine[currentIndex];
+  timeLeft = exercise.duration;
+  updateDisplay();
 
-function startRest() {
-  inRest = true;
-  remainingTime = currentRoutine.exerciseRest;
-  updateExerciseDisplay();
-  startTimer();
-}
-
-function startTimer() {
-  updateTimerDisplay();
-  timerInterval = setInterval(() => {
-    remainingTime--;
-    updateTimerDisplay();
-
-    if (remainingTime <= 0) {
-      clearInterval(timerInterval);
-      if (inRest) {
-        inRest = false;
-        currentExerciseIndex++;
-        startExercise();
-      } else {
-        if (currentExerciseIndex < currentRoutine.exercises.length - 1) {
-          startRest();
-        } else {
-          currentExerciseIndex++;
-          startExercise();
-        }
-      }
+  timer = setInterval(() => {
+    timeLeft--;
+    updateDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      handleNext();
     }
   }, 1000);
 }
 
-function resumeTimer() {
-  startTimer();
+// Handle transition
+function handleNext() {
+  if (currentIndex < routine.length - 1) {
+    // go to rest between exercises
+    startRest(false);
+  } else if (currentSet < sets) {
+    // finished a set → rest between sets
+    startRest(true);
+  } else {
+    finishRoutine();
+  }
 }
 
-function updateTimerDisplay() {
-  const minutes = String(Math.floor(remainingTime / 60)).padStart(2, "0");
-  const seconds = String(remainingTime % 60).padStart(2, "0");
-  document.getElementById("timer").textContent = `${minutes}:${seconds}`;
+// Start rest
+function startRest(isSetRest) {
+  inRest = true;
+  timeLeft = isSetRest ? restBetweenSets : restBetweenExercises;
+  updateDisplay();
 
-  const total = inRest
-    ? currentRoutine.exerciseRest
-    : currentRoutine.exercises[currentExerciseIndex].duration;
-  const progress = ((total - remainingTime) / total) * 100;
-  document.getElementById("progress-bar").style.width = `${progress}%`;
+  timer = setInterval(() => {
+    timeLeft--;
+    updateDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      if (isSetRest) {
+        currentSet++;
+        currentIndex = 0;
+      } else {
+        currentIndex++;
+      }
+      startExercise();
+    }
+  }, 1000);
 }
 
-function updateExerciseDisplay() {
-  document.getElementById("set-info").textContent =
-    `Set ${currentSet} of ${currentRoutine.sets}`;
-
+// Update UI
+function updateDisplay() {
   if (inRest) {
-    document.getElementById("current-exercise").textContent = "Rest";
-    if (currentExerciseIndex < currentRoutine.exercises.length) {
-      document.getElementById("next-exercise").textContent =
-        `Next: ${currentRoutine.exercises[currentExerciseIndex].name}`;
-    } else {
-      document.getElementById("next-exercise").textContent = "";
-    }
+    currentExerciseEl.textContent = "Rest";
+    // show only next exercise
+    const next =
+      currentIndex < routine.length - 1
+        ? routine[currentIndex + 1].name
+        : currentSet < sets
+        ? routine[0].name
+        : "";
+    nextExerciseEl.textContent = next ? `Next: ${next}` : "";
   } else {
-    document.getElementById("current-exercise").textContent =
-      currentRoutine.exercises[currentExerciseIndex].name;
-    if (currentExerciseIndex < currentRoutine.exercises.length - 1) {
-      document.getElementById("next-exercise").textContent =
-        `Next: ${currentRoutine.exercises[currentExerciseIndex + 1].name}`;
-    } else {
-      document.getElementById("next-exercise").textContent = "";
+    currentExerciseEl.textContent = routine[currentIndex].name;
+    const next =
+      currentIndex < routine.length - 1
+        ? routine[currentIndex + 1].name
+        : currentSet < sets
+        ? routine[0].name
+        : "";
+    nextExerciseEl.textContent = next ? `Next: ${next}` : "";
+  }
+
+  timerEl.textContent = formatTime(timeLeft);
+  progressBar.style.width = `${
+    ((routine[currentIndex]?.duration - timeLeft) /
+      routine[currentIndex]?.duration) *
+    100
+  }%`;
+  setInfoEl.textContent = `Set ${currentSet} of ${sets}`;
+}
+
+// Finish routine
+function finishRoutine() {
+  isRunning = false;
+  currentExerciseEl.textContent = "Done!";
+  nextExerciseEl.textContent = "";
+  timerEl.textContent = "";
+  progressBar.style.width = "0%";
+}
+
+// Format time
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const s = (seconds % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+// Save routine
+document.getElementById("save-routine").addEventListener("click", () => {
+  const routineName = document.getElementById("routine-name").value.trim();
+  if (!routineName) return alert("Please enter a routine name.");
+
+  sets = parseInt(document.getElementById("sets").value) || 1;
+  restBetweenSets =
+    parseInt(document.getElementById("rest-between-sets").value) || 0;
+  restBetweenExercises =
+    parseInt(document.getElementById("rest-between-exercises").value) || 0;
+
+  const exercises = [];
+  document.querySelectorAll(".exercise-item").forEach((item) => {
+    const name = item.querySelector(".exercise-name").value.trim();
+    const duration =
+      parseInt(item.querySelector(".exercise-duration").value) || 0;
+    if (name && duration > 0) {
+      exercises.push({ name, duration });
     }
-  }
-}
-
-function addExercise() {
-  const exerciseList = document.getElementById("exercise-list");
-  const div = document.createElement("div");
-  div.className = "exercise-item";
-  div.innerHTML = `
-    <input type="text" class="exercise-name" placeholder="Exercise Name" />
-    <label>Duration (seconds):</label>
-    <input type="number" class="exercise-duration" value="30" min="1" />
-    <button type="button" class="delete-btn" onclick="this.parentElement.remove()">×</button>
-  `;
-  exerciseList.appendChild(div);
-}
-
-function saveRoutine() {
-  const name = document.getElementById("routine-name").value.trim();
-  const sets = parseInt(document.getElementById("set-count").value) || 1;
-  const setRest = parseInt(document.getElementById("set-rest").value) || 0;
-  const exerciseRest = parseInt(document.getElementById("exercise-rest").value) || 0;
-
-  if (!name) {
-    alert("Please enter a routine name");
-    return;
-  }
-
-  const exercises = Array.from(document.querySelectorAll(".exercise-item")).map(
-    (item) => ({
-      name: item.querySelector(".exercise-name").value.trim(),
-      duration: parseInt(item.querySelector(".exercise-duration").value) || 30,
-    })
-  );
-
-  const routine = { name, sets, setRest, exerciseRest, exercises };
-  const existingIndex = routines.findIndex((r) => r.name === name);
-
-  if (existingIndex >= 0) {
-    routines[existingIndex] = routine;
-  } else {
-    routines.push(routine);
-  }
-
-  localStorage.setItem("routines", JSON.stringify(routines));
-  loadRoutineOptions();
-  document.getElementById("save-feedback").textContent = "Routine saved!";
-  setTimeout(() => {
-    document.getElementById("save-feedback").textContent = "";
-  }, 2000);
-}
-
-function loadRoutineOptions() {
-  const select = document.getElementById("routine-select");
-  select.innerHTML = "";
-  routines.forEach((routine, index) => {
-    const option = document.createElement("option");
-    option.value = index;
-    option.textContent = routine.name;
-    select.appendChild(option);
   });
-}
 
-function deleteRoutine() {
-  const select = document.getElementById("routine-select");
-  const index = select.value;
-  if (index !== "" && confirm("Delete this routine?")) {
-    routines.splice(index, 1);
-    localStorage.setItem("routines", JSON.stringify(routines));
-    loadRoutineOptions();
-    resetRoutine();
-  }
-}
+  if (exercises.length === 0) return alert("Add at least one exercise.");
 
-document.getElementById("routine-select").addEventListener("change", (e) => {
-  currentRoutine = routines[e.target.value];
-  resetRoutine();
+  const routines = JSON.parse(localStorage.getItem("routines")) || {};
+  routines[routineName] = {
+    exercises,
+    sets,
+    restBetweenSets,
+    restBetweenExercises,
+  };
+  localStorage.setItem("routines", JSON.stringify(routines));
+
+  alert("Routine saved!");
 });
 
-window.onload = loadRoutineOptions;
+// Delete exercise button (small black ×)
+function createDeleteButton() {
+  const btn = document.createElement("button");
+  btn.textContent = "×";
+  btn.style.color = "black";
+  btn.style.fontSize = "1rem";
+  btn.style.background = "none";
+  btn.style.border = "none";
+  btn.style.cursor = "pointer";
+  btn.addEventListener("click", function () {
+    this.parentElement.remove();
+  });
+  return btn;
+}
