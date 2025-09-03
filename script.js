@@ -198,7 +198,7 @@ function updateTimer() {
 function updateDisplay(name) {
   const progressBar = document.getElementById("progress-bar");
 
-  // Reset progress bar classes
+  // Reset classes
   progressBar.className = "";
 
   document.getElementById("current-exercise").textContent = name;
@@ -210,26 +210,30 @@ function updateDisplay(name) {
     // Decide which type of rest
     if (routineIndex === 0 && setIndex > 1) {
       // This is a set rest
-      progressBar.classList.add("rest-set");
+      progressBar.classList.add("rest-set");  // 🔵 blue
       nextText = routine.exercises.length > 0 ? "Next: " + routine.exercises[0].name : "";
     } else {
       // This is an exercise rest
-      progressBar.classList.add("rest-exercise");
+      progressBar.classList.add("rest-exercise");  // 🟡 yellow
       if (routineIndex < routine.exercises.length) {
         nextText = "Next: " + routine.exercises[routineIndex].name;
       }
     }
-  } else {
+  } else if (name) {
     // Exercise time
-    progressBar.classList.add("exercise");
+    progressBar.classList.add("exercise");  // 🟢 green
     if (routineIndex + 1 < routine.exercises.length) {
       nextText = "Next: " + routine.exercises[routineIndex + 1].name;
     } else if (setIndex < routine.sets) {
       nextText = `Next: Rest (${routine.setRest}s)`;
     }
+  } else {
+    // If name is empty (like after reset), keep it gray
+    progressBar.style.backgroundColor = "#ddd";
   }
 
   document.getElementById("next-exercise").textContent = nextText;
 }
 
 updateRoutineSelect();
+
