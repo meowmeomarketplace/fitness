@@ -108,6 +108,16 @@ body {
 
 input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-sizing: border-box; }
 
+.exercise-header {
+  display: flex;
+  gap: 0.5em;
+  font-weight: 600;
+  margin-bottom: 0.3em;
+}
+
+.exercise-header span:first-child { flex: 2; }  /* aligns with exercise name input */
+.exercise-header span:last-child { flex: 1; text-align: left; }  /* aligns with duration input */
+
 .exercise-item {
   display: flex;
   align-items: center;
