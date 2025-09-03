@@ -26,7 +26,7 @@ let setRestDuration = 0;
 let startTime = null;
 let durationSeconds = 0;
 
-// Load routines into select
+// Load routines
 function loadRoutines() {
   routineSelect.innerHTML = "";
   Object.keys(routines).forEach(name => {
@@ -38,7 +38,7 @@ function loadRoutines() {
 }
 loadRoutines();
 
-// Add new exercise
+// Add Exercise
 function addExercise() {
   const container = document.createElement('div');
   container.className = 'exercise-item';
@@ -70,7 +70,7 @@ function addExercise() {
   document.getElementById('exercise-list').appendChild(container);
 }
 
-// Save routine
+// Save Routine
 function saveRoutine() {
   const name = document.getElementById('routine-name').value.trim();
   if (!name) return alert("Enter a routine name!");
@@ -96,14 +96,14 @@ function saveRoutine() {
   setTimeout(() => saveFeedback.textContent = "", 3000);
 }
 
-// Format time MM:SS
+// Format time
 function formatTime(seconds) {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
   const s = (seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 }
 
-// Start or resume routine
+// Start or Resume
 function startOrResumeRoutine() {
   const selected = routineSelect.value;
   if (!selected) return alert("Select a routine!");
@@ -131,7 +131,6 @@ function startOrResumeRoutine() {
 function runNextStep() {
   if (!currentRoutine) return resetRoutine();
 
-  // End of all sets
   if (currentSet > totalSets) {
     currentExerciseDisplay.textContent = "Done!";
     nextExerciseDisplay.textContent = "";
@@ -144,7 +143,6 @@ function runNextStep() {
     return;
   }
 
-  // End of current set
   if (currentExerciseIndex >= currentRoutine.length) {
     if (currentSet < totalSets) {
       inRest = true;
@@ -158,9 +156,8 @@ function runNextStep() {
     return;
   }
 
-  // Normal exercise
   const ex = currentRoutine[currentExerciseIndex];
-  const label = (totalSets > 1 ? `Set ${currentSet} - ` : "") + ex.name;
+  const label = `Set ${currentSet} - ${ex.name}`;
   startCountdown(ex.duration, label, "exercise");
 }
 
@@ -184,19 +181,10 @@ function startCountdown(duration, label, type = "exercise") {
     const percent = ((durationSeconds - secondsLeft) / durationSeconds) * 100;
     progressBar.style.width = `${percent}%`;
 
-    // Show next exercise during rest
     if (inRest) {
-      if (currentExerciseIndex < currentRoutine.length) {
-        nextExerciseDisplay.textContent = `Next: ${currentRoutine[currentExerciseIndex].name}`;
-      } else {
-        nextExerciseDisplay.textContent = "";
-      }
+      nextExerciseDisplay.textContent = currentRoutine[currentExerciseIndex]?.name ? `Next: ${currentRoutine[currentExerciseIndex].name}` : "";
     } else {
-      if (currentExerciseIndex < currentRoutine.length - 1) {
-        nextExerciseDisplay.textContent = `Next: ${currentRoutine[currentExerciseIndex + 1].name}`;
-      } else {
-        nextExerciseDisplay.textContent = "";
-      }
+      nextExerciseDisplay.textContent = currentRoutine[currentExerciseIndex + 1]?.name ? `Next: ${currentRoutine[currentExerciseIndex + 1].name}` : "";
     }
 
     if (secondsLeft > 0) {
@@ -262,5 +250,4 @@ function deleteRoutine() {
   resetRoutine();
 }
 
-// Initialize with one exercise if none
 if (document.querySelectorAll('.exercise-item').length === 0) addExercise();
