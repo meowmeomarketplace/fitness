@@ -86,7 +86,7 @@ body {
 #progress-bar {
   height: 100%;
   width: 0%;
-  transition: width 1s linear; /* smoother transition */
+  transition: width 1s linear; /* smoother animation */
 }
 
 #progress-bar.exercise {
@@ -158,15 +158,15 @@ input, select, button {
 .delete-exercise {
   background: none;
   border: none;
-  font-size: 0.9rem; /* smaller */
-  color: #333;       /* black */
+  font-size: 0.9rem;
+  color: #333;
   cursor: pointer;
   padding: 0;
   line-height: 1;
 }
 
 .delete-exercise:hover {
-  color: #000;       /* solid black on hover */
+  color: #000;
   transform: scale(1.2);
 }
 
