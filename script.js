@@ -190,7 +190,7 @@ function updateDisplay(name, type) {
   let nextText = "";
   if (type === "exercise") {
     if (routineIndex < routine.exercises.length - 1) nextText = `Next: ${routine.exercises[routineIndex + 1].name}`;
-    else if (setIndex < routine.sets) nextText = `Next: Rest between sets (${routine.setRest}s)`;
+    else if (setIndex < routine.sets) nextText = `Next: Set Rest`;
   } else if (type === "restExercise") {
     nextText = routineIndex + 1 < routine.exercises.length ?
       `Next: ${routine.exercises[routineIndex + 1].name}` :
@@ -202,3 +202,4 @@ function updateDisplay(name, type) {
 }
 
 updateRoutineSelect();
+
