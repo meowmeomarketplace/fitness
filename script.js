@@ -2,10 +2,10 @@ let routines = JSON.parse(localStorage.getItem("routines") || "{}");
 let routine = null;
 let routineIndex = 0;
 let setIndex = 1;
-let isRest = false;
 let timer = null;
 let timeLeft = 0;
 let totalTime = 0;
+let state = "idle"; // "idle", "exercise", "restExercise", "restSet"
 
 function saveRoutine() {
   const name = document.getElementById("routine-name").value.trim();
@@ -73,11 +73,12 @@ function startOrResumeRoutine() {
     routine = routines[name];
     routineIndex = 0;
     setIndex = 1;
+    state = "exercise";
   }
   document.getElementById("start-resume-btn").disabled = true;
   document.getElementById("pause-btn").disabled = false;
 
-  if (timeLeft === 0) loadExercise();
+  if (timeLeft === 0) startNextInterval();
   else startTimer();
 }
 
@@ -92,7 +93,7 @@ function resetRoutine() {
   routine = null;
   routineIndex = 0;
   setIndex = 1;
-  isRest = false;
+  state = "idle";
   timeLeft = 0;
   document.getElementById("timer").textContent = "00:00";
   document.getElementById("progress-bar").style.width = "0%";
@@ -104,44 +105,27 @@ function resetRoutine() {
   document.getElementById("pause-btn").disabled = true;
 }
 
-function loadExercise() {
-  if (!routine) return;
-
-  // Completed all exercises in current set
-  if (routineIndex >= routine.exercises.length) {
-    if (setIndex < routine.sets) {
-      // Start rest between sets
-      isRest = true;
-      timeLeft = routine.setRest;
-      totalTime = timeLeft;
-      updateDisplay("Rest", true);
-      startTimer();
-      return;
-    } else {
-      resetRoutine();
-      alert("Routine complete!");
-      return;
-    }
+function startNextInterval() {
+  if (state === "exercise") {
+    // Start exercise
+    const exercise = routine.exercises[routineIndex];
+    timeLeft = exercise.duration;
+    totalTime = timeLeft;
+    updateDisplay(exercise.name, "exercise");
+    startTimer();
+  } else if (state === "restExercise") {
+    // Rest between exercises
+    timeLeft = routine.restTime;
+    totalTime = timeLeft;
+    updateDisplay("Rest", "restExercise");
+    startTimer();
+  } else if (state === "restSet") {
+    // Rest between sets
+    timeLeft = routine.setRest;
+    totalTime = timeLeft;
+    updateDisplay("Rest", "restSet");
+    startTimer();
   }
-
-  const exercise = routine.exercises[routineIndex];
-
-  if (isRest) {
-    // Rest just ended
-    isRest = false;
-
-    if (routineIndex === 0 && setIndex < routine.sets) {
-      setIndex++;
-    }
-
-    loadExercise();
-    return;
-  }
-
-  timeLeft = exercise.duration;
-  totalTime = timeLeft;
-  updateDisplay(exercise.name, false);
-  startTimer();
 }
 
 function startTimer() {
@@ -156,25 +140,32 @@ function startTimer() {
     timeLeft = Math.ceil(remainingMs / 1000);
     updateTimer();
 
-    // Smooth progress
     const elapsed = (totalTime * 1000 - remainingMs) / (totalTime * 1000);
     progressBar.style.width = Math.min(elapsed * 100, 100) + "%";
 
     if (remainingMs <= 0) {
       clearInterval(timer);
-      if (isRest) { isRest = false; loadExercise(); }
-      else {
+
+      if (state === "exercise") {
         if (routineIndex < routine.exercises.length - 1) {
-          isRest = true;
-          timeLeft = routine.restTime;
-          totalTime = timeLeft;
-          updateDisplay("Rest", false);
-          startTimer();
+          state = "restExercise";
+        } else if (setIndex < routine.sets) {
+          state = "restSet";
         } else {
-          routineIndex++;
-          loadExercise();
+          resetRoutine();
+          alert("Routine complete!");
+          return;
         }
+      } else if (state === "restExercise") {
+        routineIndex++;
+        state = "exercise";
+      } else if (state === "restSet") {
+        routineIndex = 0;
+        setIndex++;
+        state = "exercise";
       }
+
+      startNextInterval();
     }
   }, 50);
   updateTimer();
@@ -186,7 +177,7 @@ function updateTimer() {
   document.getElementById("timer").textContent = `${minutes}:${seconds}`;
 }
 
-function updateDisplay(name, isSetRest = false) {
+function updateDisplay(name, type) {
   const progressBar = document.getElementById("progress-bar");
 
   document.getElementById("current-set").textContent = `Set ${setIndex} of ${routine.sets}`;
@@ -194,22 +185,24 @@ function updateDisplay(name, isSetRest = false) {
 
   // Set progress bar color
   progressBar.className = "";
-  if (name === "Rest") {
-    if (isSetRest) progressBar.classList.add("rest-set");
-    else progressBar.classList.add("rest-exercise");
-  } else {
-    progressBar.classList.add("exercise");
-  }
+  if (type === "exercise") progressBar.classList.add("exercise");
+  else if (type === "restExercise") progressBar.classList.add("rest-exercise");
+  else if (type === "restSet") progressBar.classList.add("rest-set");
 
-  // Next exercise
+  // Next exercise text
   let nextText = "";
-  if (name === "Rest") {
-    nextText = isSetRest ? `Next: ${routine.exercises[0].name}` :
-               routineIndex < routine.exercises.length ? `Next: ${routine.exercises[routineIndex].name}` : "";
-  } else {
+  if (type === "exercise") {
+    if (routineIndex < routine.exercises.length - 1) {
+      nextText = `Next: ${routine.exercises[routineIndex + 1].name}`;
+    } else if (setIndex < routine.sets) {
+      nextText = `Next: Rest between sets (${routine.setRest}s)`;
+    }
+  } else if (type === "restExercise") {
     nextText = routineIndex + 1 < routine.exercises.length ?
-               `Next: ${routine.exercises[routineIndex + 1].name}` :
-               setIndex < routine.sets ? `Next: Rest (${routine.setRest}s)` : "";
+      `Next: ${routine.exercises[routineIndex + 1].name}` :
+      setIndex < routine.sets ? `Next: Rest between sets (${routine.setRest}s)` : "";
+  } else if (type === "restSet") {
+    nextText = `Next: ${routine.exercises[0].name}`;
   }
   document.getElementById("next-exercise").textContent = nextText;
 }
