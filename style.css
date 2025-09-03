@@ -86,7 +86,7 @@ body {
 #progress-bar {
   height: 100%;
   width: 0%;
-  transition: width 1s linear; /* smooth animation */
+  transition: width 50ms linear; /* smooth animation */
 }
 
 #progress-bar.exercise {
