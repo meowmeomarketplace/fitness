@@ -149,7 +149,14 @@ function startTimer() {
       if (state === "exercise") {
         if (routineIndex < routine.exercises.length - 1) state = "restExercise";
         else if (setIndex < routine.sets) state = "restSet";
-        else { resetRoutine(); alert("Routine complete!"); return; }
+        else { 
+          // Routine complete - inline message
+          document.getElementById("current-exercise").textContent = "Routine complete!";
+          document.getElementById("next-exercise").textContent = "";
+          document.getElementById("timer").textContent = "00:00";
+          progressBar.style.width = "100%";
+          return; 
+        }
       } else if (state === "restExercise") {
         routineIndex++;
         state = "exercise";
