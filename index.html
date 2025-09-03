@@ -1,68 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fitness Timer</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Purrfect Fitness</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app">
-    <!-- Controls -->
-    <div class="controls">
-      <button id="start-btn">▶️</button>
-      <button id="pause-btn" disabled>⏸️</button>
-      <button id="reset-btn" disabled>⏹️</button>
-    </div>
-
-    <!-- Current/Next Exercise Info -->
-    <div id="current-exercise"></div>
-    <div id="set-info"></div>
-    <div id="timer">00:00</div>
-
-    <!-- Progress -->
-    <div id="progress-bar-container">
-      <div id="progress-bar"></div>
-    </div>
-    <div id="next-exercise"></div>
-
-    <!-- Routine Creator -->
-    <div id="routine-creator">
-      <h2>Create Routine</h2>
-
-      <!-- Row 1: Routine name + sets -->
-      <div class="routine-row">
-        <label for="routine-name">Routine Name:</label>
-        <input type="text" id="routine-name" placeholder="My Routine">
-        <label for="sets">Sets:</label>
-        <input type="number" id="sets" value="1" min="1">
+    <!-- Routine Runner -->
+    <section id="routine-runner">
+      <div class="controls">
+        <button id="start-resume-btn" onclick="startOrResumeRoutine()" title="Start">&#9654;</button>
+        <button id="pause-btn" onclick="pauseRoutine()" title="Pause" disabled>&#10073;&#10073;</button>
+        <button id="reset-btn" onclick="resetRoutine()" title="Reset">&#x21bb;</button>
       </div>
 
-      <!-- Row 2: Rest times -->
+      <div id="current-exercise"></div>
+      <div id="set-info"></div>
+      <div id="timer">00:00</div>
+      <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+      </div>
+      <div id="next-exercise"></div>
+    </section>
+
+    <!-- Routine Creator -->
+    <section id="routine-creator">
+      <h2>Create Routine</h2>
+
+      <!-- Row 1 -->
       <div class="routine-row">
-        <label for="rest-between-sets">Rest Between Sets (sec):</label>
-        <input type="number" id="rest-between-sets" value="30" min="0">
-        <label for="rest-between-exercises">Rest Between Exercises (sec):</label>
-        <input type="number" id="rest-between-exercises" value="15" min="0">
+        <label for="routine-name">Routine Name:</label>
+        <input type="text" id="routine-name" placeholder="Routine Name" />
+        <label for="set-count">Sets:</label>
+        <input type="number" id="set-count" value="1" min="1" />
+      </div>
+
+      <!-- Row 2 -->
+      <div class="routine-row">
+        <label for="set-rest">Rest Between Sets (sec):</label>
+        <input type="number" id="set-rest" value="0" min="0" />
+        <label for="rest-time">Rest Between Exercises (sec):</label>
+        <input type="number" id="rest-time" value="15" min="0" />
       </div>
 
       <!-- Exercises list -->
-      <div id="exercise-list">
-        <h3>Exercises</h3>
-      </div>
-      <button id="add-exercise">+ Add Exercise</button>
-
-      <!-- Save feedback -->
+      <div id="exercise-list"></div>
+      <button type="button" onclick="addExercise()">+ Add Exercise</button>
       <div id="save-feedback"></div>
+    </section>
 
-      <!-- Routine manager -->
-      <div id="routine-manager">
-        <select id="saved-routines"></select>
-        <button id="save-routine">Save Routine</button>
-        <button id="load-routine">Load Routine</button>
-        <button id="delete-routine">Delete Routine</button>
-      </div>
-    </div>
+    <!-- Routine Selector and Delete -->
+    <section id="routine-manager">
+      <select id="routine-select"></select>
+      <button type="button" onclick="deleteRoutine()">Delete Routine</button>
+    </section>
   </div>
 
   <script src="script.js"></script>
