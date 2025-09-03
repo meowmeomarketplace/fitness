@@ -137,7 +137,6 @@ input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-siz
 
 .exercise-item input.exercise-name { flex: 2; }
 .exercise-item input.exercise-duration { flex: 1; padding-left: 0.3em; } /* match header label alignment */
-.exercise-item label { flex: 1; font-weight: 600; font-size: 0.9rem; }
 
 .delete-exercise {
   flex: 0 0 auto;
