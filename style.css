@@ -15,7 +15,6 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Controls */
 .controls {
   display: flex;
   justify-content: center;
@@ -41,7 +40,6 @@ body {
   transform: scale(1.2);
 }
 
-/* Timer and progress */
 #current-set {
   font-size: 1.2rem;
   font-weight: 600;
@@ -86,26 +84,14 @@ body {
 #progress-bar {
   height: 100%;
   width: 0%;
-  transition: width 50ms linear; /* smooth animation */
+  transition: width 50ms linear;
 }
 
-#progress-bar.exercise {
-  background-color: #28a745; /* green */
-}
+#progress-bar.exercise { background-color: #28a745; }       /* green */
+#progress-bar.rest-exercise { background-color: #ffc107; }  /* yellow */
+#progress-bar.rest-set { background-color: #007bff; }       /* blue */
 
-#progress-bar.rest-exercise {
-  background-color: #ffc107; /* yellow */
-}
-
-#progress-bar.rest-set {
-  background-color: #007bff; /* blue */
-}
-
-/* Routine creator */
-#routine-creator h2 {
-  margin-top: 2rem;
-  text-align: center;
-}
+#routine-creator h2 { margin-top: 2rem; text-align: center; }
 
 .routine-header {
   display: flex;
@@ -115,23 +101,11 @@ body {
   align-items: center;
 }
 
-.routine-header label {
-  font-weight: 600;
-}
+.routine-header label { font-weight: 600; }
 
-.routine-header input {
-  flex: 1;
-  padding: 0.5em;
-  font-size: 1em;
-  min-width: 60px;
-}
+.routine-header input { flex: 1; padding: 0.5em; font-size: 1em; min-width: 60px; }
 
-input, select, button {
-  margin: 0.3em 0;
-  padding: 0.5em;
-  font-size: 1em;
-  box-sizing: border-box;
-}
+input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-sizing: border-box; }
 
 .exercise-item {
   display: flex;
@@ -140,20 +114,9 @@ input, select, button {
   margin-bottom: 0.5em;
 }
 
-.exercise-item input.exercise-name {
-  flex: 2;
-}
-
-.exercise-item label {
-  flex: 1;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.exercise-duration {
-  flex: 1;
-  width: 70px;
-}
+.exercise-item input.exercise-name { flex: 2; }
+.exercise-item label { flex: 1; font-weight: 600; font-size: 0.9rem; }
+.exercise-duration { flex: 1; width: 70px; }
 
 .delete-exercise {
   background: none;
@@ -165,24 +128,9 @@ input, select, button {
   line-height: 1;
 }
 
-.delete-exercise:hover {
-  color: #000;
-  transform: scale(1.2);
-}
+.delete-exercise:hover { color: #000; transform: scale(1.2); }
 
-#save-feedback {
-  font-size: 0.9rem;
-  color: #28a745;
-  margin-top: 0.5em;
-}
+#save-feedback { font-size: 0.9rem; color: #28a745; margin-top: 0.5em; }
 
-#routine-manager {
-  margin-top: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-#routine-manager select {
-  flex-grow: 1;
-}
+#routine-manager { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; }
+#routine-manager select { flex-grow: 1; }
