@@ -42,6 +42,13 @@ body {
 }
 
 /* Timer and progress */
+#current-set {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+
 #current-exercise {
   font-size: 1.8rem;
   font-weight: 600;
@@ -49,12 +56,6 @@ body {
   margin-bottom: 0.3rem;
   min-height: 2.2rem;
   white-space: pre-line;
-}
-
-#set-info {
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 0.3rem;
 }
 
 #next-exercise {
@@ -95,7 +96,7 @@ body {
   text-align: center;
 }
 
-.routine-row {
+.routine-header {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5em;
@@ -103,17 +104,25 @@ body {
   align-items: center;
 }
 
-.routine-row label {
+.routine-header label {
   font-weight: 600;
 }
 
-.routine-row input {
+.routine-header input {
   flex: 1;
   padding: 0.5em;
   font-size: 1em;
+  min-width: 60px;
 }
 
-#exercise-list .exercise-item {
+input, select, button {
+  margin: 0.3em 0;
+  padding: 0.5em;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.exercise-item {
   display: flex;
   gap: 0.5em;
   align-items: center;
@@ -135,11 +144,11 @@ body {
   width: 70px;
 }
 
-.delete-btn {
+.delete-exercise {
   background: none;
   border: none;
-  color: black;
-  font-size: 14px;
+  font-size: 1.2rem;
+  color: red;
   cursor: pointer;
 }
 
