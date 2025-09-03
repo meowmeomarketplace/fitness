@@ -147,9 +147,16 @@ input, select, button {
 .delete-exercise {
   background: none;
   border: none;
-  font-size: 1.2rem;
-  color: red;
+  font-size: 0.9rem;   /* smaller */
+  color: #333;         /* black/dark gray */
   cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.delete-exercise:hover {
+  color: #000;         /* solid black on hover */
+  transform: scale(1.2);
 }
 
 #save-feedback {
@@ -168,3 +175,4 @@ input, select, button {
 #routine-manager select {
   flex-grow: 1;
 }
+
