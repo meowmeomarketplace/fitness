@@ -40,7 +40,7 @@ function saveRoutine() {
 
 function updateRoutineSelect() {
   const select = document.getElementById("routine-select");
-  select.innerHTML = "";
+  select.innerHTML = "<option value='' disabled selected>-- Select a routine --</option>";
   for (const name in routines) {
     const option = document.createElement("option");
     option.value = name;
@@ -86,6 +86,7 @@ function startOrResumeRoutine() {
     routine = routines[name];
     routineIndex = 0;
     setIndex = 1;
+    isRest = false;
   }
 
   document.getElementById("start-resume-btn").disabled = true;
@@ -121,11 +122,13 @@ function resetRoutine() {
 }
 
 function loadExercise() {
+  // End of all exercises in this set
   if (routineIndex >= routine.exercises.length) {
     if (setIndex < routine.sets) {
-      isRest = true;
+      // Rest between sets
       timeLeft = routine.setRest;
       totalTime = timeLeft;
+      isRest = true;
       routineIndex = 0;
       setIndex++;
       updateDisplay("Rest");
@@ -138,14 +141,15 @@ function loadExercise() {
     }
   }
 
-  const exercise = routine.exercises[routineIndex];
+  // Handle Rest period
   if (isRest) {
-    isRest = false;
-    routineIndex++;
-    loadExercise();
+    updateDisplay("Rest");
+    startTimer();
     return;
   }
 
+  // Handle Exercise
+  const exercise = routine.exercises[routineIndex];
   timeLeft = exercise.duration;
   totalTime = timeLeft;
   updateDisplay(exercise.name);
@@ -162,15 +166,18 @@ function startTimer() {
       clearInterval(timer);
       if (isRest) {
         isRest = false;
+        // After rest, continue with exercise
         loadExercise();
       } else {
         if (routineIndex < routine.exercises.length - 1) {
+          // Insert rest between exercises
           isRest = true;
           timeLeft = routine.restTime;
           totalTime = timeLeft;
           updateDisplay("Rest");
           startTimer();
         } else {
+          // Last exercise in set
           routineIndex++;
           loadExercise();
         }
@@ -192,7 +199,6 @@ function updateDisplay(name) {
   document.getElementById("current-exercise").textContent = name;
   document.getElementById("current-set").textContent = `Set ${setIndex} of ${routine.sets}`;
 
-  // Show next exercise ONLY (skip showing "Rest")
   let nextText = "";
   if (name === "Rest") {
     if (routineIndex < routine.exercises.length) {
@@ -201,6 +207,8 @@ function updateDisplay(name) {
   } else {
     if (routineIndex + 1 < routine.exercises.length) {
       nextText = "Next: " + routine.exercises[routineIndex + 1].name;
+    } else if (setIndex < routine.sets) {
+      nextText = `Next: Rest (${routine.setRest}s)`;
     }
   }
   document.getElementById("next-exercise").textContent = nextText;
