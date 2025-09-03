@@ -40,7 +40,7 @@ function saveRoutine() {
 
 function updateRoutineSelect() {
   const select = document.getElementById("routine-select");
-  select.innerHTML = "<option value='' disabled selected>-- Select a routine --</option>";
+  select.innerHTML = "";
   for (const name in routines) {
     const option = document.createElement("option");
     option.value = name;
@@ -86,7 +86,6 @@ function startOrResumeRoutine() {
     routine = routines[name];
     routineIndex = 0;
     setIndex = 1;
-    isRest = false;
   }
 
   document.getElementById("start-resume-btn").disabled = true;
@@ -114,6 +113,7 @@ function resetRoutine() {
   timeLeft = 0;
   document.getElementById("timer").textContent = "00:00";
   document.getElementById("progress-bar").style.width = "0%";
+  document.getElementById("progress-bar").className = ""; // reset color
   document.getElementById("current-exercise").textContent = "";
   document.getElementById("next-exercise").textContent = "";
   document.getElementById("current-set").textContent = "";
@@ -122,16 +122,14 @@ function resetRoutine() {
 }
 
 function loadExercise() {
-  // End of all exercises in this set
   if (routineIndex >= routine.exercises.length) {
     if (setIndex < routine.sets) {
-      // Rest between sets
+      isRest = true;
       timeLeft = routine.setRest;
       totalTime = timeLeft;
-      isRest = true;
       routineIndex = 0;
       setIndex++;
-      updateDisplay("Rest");
+      updateDisplay("Rest", true);
       startTimer();
       return;
     } else {
@@ -141,18 +139,17 @@ function loadExercise() {
     }
   }
 
-  // Handle Rest period
+  const exercise = routine.exercises[routineIndex];
   if (isRest) {
-    updateDisplay("Rest");
-    startTimer();
+    isRest = false;
+    routineIndex++;
+    loadExercise();
     return;
   }
 
-  // Handle Exercise
-  const exercise = routine.exercises[routineIndex];
   timeLeft = exercise.duration;
   totalTime = timeLeft;
-  updateDisplay(exercise.name);
+  updateDisplay(exercise.name, false);
   startTimer();
 }
 
@@ -166,18 +163,15 @@ function startTimer() {
       clearInterval(timer);
       if (isRest) {
         isRest = false;
-        // After rest, continue with exercise
         loadExercise();
       } else {
         if (routineIndex < routine.exercises.length - 1) {
-          // Insert rest between exercises
           isRest = true;
           timeLeft = routine.restTime;
           totalTime = timeLeft;
-          updateDisplay("Rest");
+          updateDisplay("Rest", false);
           startTimer();
         } else {
-          // Last exercise in set
           routineIndex++;
           loadExercise();
         }
@@ -195,7 +189,7 @@ function updateTimer() {
   document.getElementById("progress-bar").style.width = percent + "%";
 }
 
-function updateDisplay(name) {
+function updateDisplay(name, isSetRest = false) {
   const progressBar = document.getElementById("progress-bar");
 
   // Reset classes
@@ -207,33 +201,25 @@ function updateDisplay(name) {
   let nextText = "";
 
   if (name === "Rest") {
-    // Decide which type of rest
-    if (routineIndex === 0 && setIndex > 1) {
-      // This is a set rest
-      progressBar.classList.add("rest-set");  // 🔵 blue
+    if (isSetRest) {
+      progressBar.classList.add("rest-set"); // Blue
       nextText = routine.exercises.length > 0 ? "Next: " + routine.exercises[0].name : "";
     } else {
-      // This is an exercise rest
-      progressBar.classList.add("rest-exercise");  // 🟡 yellow
+      progressBar.classList.add("rest-exercise"); // Yellow
       if (routineIndex < routine.exercises.length) {
         nextText = "Next: " + routine.exercises[routineIndex].name;
       }
     }
   } else if (name) {
-    // Exercise time
-    progressBar.classList.add("exercise");  // 🟢 green
+    progressBar.classList.add("exercise"); // Green
     if (routineIndex + 1 < routine.exercises.length) {
       nextText = "Next: " + routine.exercises[routineIndex + 1].name;
     } else if (setIndex < routine.sets) {
       nextText = `Next: Rest (${routine.setRest}s)`;
     }
-  } else {
-    // If name is empty (like after reset), keep it gray
-    progressBar.style.backgroundColor = "#ddd";
   }
 
   document.getElementById("next-exercise").textContent = nextText;
 }
 
 updateRoutineSelect();
-
