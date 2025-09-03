@@ -75,6 +75,7 @@ function startOrResumeRoutine() {
     setIndex = 1;
     state = "exercise";
   }
+
   document.getElementById("start-resume-btn").disabled = true;
   document.getElementById("pause-btn").disabled = false;
 
@@ -106,21 +107,20 @@ function resetRoutine() {
 }
 
 function startNextInterval() {
+  if (!routine) return;
+
   if (state === "exercise") {
-    // Start exercise
     const exercise = routine.exercises[routineIndex];
     timeLeft = exercise.duration;
     totalTime = timeLeft;
     updateDisplay(exercise.name, "exercise");
     startTimer();
   } else if (state === "restExercise") {
-    // Rest between exercises
     timeLeft = routine.restTime;
     totalTime = timeLeft;
     updateDisplay("Rest", "restExercise");
     startTimer();
   } else if (state === "restSet") {
-    // Rest between sets
     timeLeft = routine.setRest;
     totalTime = timeLeft;
     updateDisplay("Rest", "restSet");
@@ -147,15 +147,9 @@ function startTimer() {
       clearInterval(timer);
 
       if (state === "exercise") {
-        if (routineIndex < routine.exercises.length - 1) {
-          state = "restExercise";
-        } else if (setIndex < routine.sets) {
-          state = "restSet";
-        } else {
-          resetRoutine();
-          alert("Routine complete!");
-          return;
-        }
+        if (routineIndex < routine.exercises.length - 1) state = "restExercise";
+        else if (setIndex < routine.sets) state = "restSet";
+        else { resetRoutine(); alert("Routine complete!"); return; }
       } else if (state === "restExercise") {
         routineIndex++;
         state = "exercise";
@@ -183,7 +177,7 @@ function updateDisplay(name, type) {
   document.getElementById("current-set").textContent = `Set ${setIndex} of ${routine.sets}`;
   document.getElementById("current-exercise").textContent = name;
 
-  // Set progress bar color
+  // Progress bar color
   progressBar.className = "";
   if (type === "exercise") progressBar.classList.add("exercise");
   else if (type === "restExercise") progressBar.classList.add("rest-exercise");
@@ -192,11 +186,8 @@ function updateDisplay(name, type) {
   // Next exercise text
   let nextText = "";
   if (type === "exercise") {
-    if (routineIndex < routine.exercises.length - 1) {
-      nextText = `Next: ${routine.exercises[routineIndex + 1].name}`;
-    } else if (setIndex < routine.sets) {
-      nextText = `Next: Rest between sets (${routine.setRest}s)`;
-    }
+    if (routineIndex < routine.exercises.length - 1) nextText = `Next: ${routine.exercises[routineIndex + 1].name}`;
+    else if (setIndex < routine.sets) nextText = `Next: Rest between sets (${routine.setRest}s)`;
   } else if (type === "restExercise") {
     nextText = routineIndex + 1 < routine.exercises.length ?
       `Next: ${routine.exercises[routineIndex + 1].name}` :
