@@ -1,170 +1,127 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f0f0f0;
-  padding: 1em;
-  color: #333;
+  background: #f4f4f4;
   margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 .app {
-  max-width: 600px;
-  margin: auto;
   background: #fff;
-  padding: 1em;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-/* Controls */
 .controls {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 10px;
+  margin-bottom: 15px;
 }
 
-.controls button {
-  background: none;
+button {
+  padding: 8px 14px;
   border: none;
-  font-size: 2rem;
+  border-radius: 5px;
+  background: #007bff;
+  color: white;
+  font-size: 14px;
   cursor: pointer;
-  color: #333;
-  transition: transform 0.1s ease;
 }
 
-.controls button:disabled {
-  color: #ccc;
+button:disabled {
+  background: #ccc;
   cursor: not-allowed;
 }
 
-.controls button:hover:not(:disabled) {
-  transform: scale(1.2);
-}
-
-/* Timer and progress */
-#current-set {
-  font-size: 1.2rem;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 0.3rem;
-}
-
 #current-exercise {
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 1.5em;
+  margin: 10px 0;
   text-align: center;
-  margin-bottom: 0.3rem;
-  min-height: 2.2rem;
-  white-space: pre-line;
 }
 
-#next-exercise {
-  font-size: 1rem;
+#set-info {
+  font-weight: bold;
+  margin-bottom: 5px;
   text-align: center;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
 }
 
 #timer {
-  font-size: 4rem;
-  font-weight: 900;
+  font-size: 2em;
   text-align: center;
-  margin-bottom: 0.7rem;
-  font-family: 'Courier New', Courier, monospace;
-  letter-spacing: 4px;
+  margin-bottom: 10px;
 }
 
 #progress-bar-container {
-  width: 100%;
-  background-color: #ddd;
-  height: 30px;
+  background: #ddd;
+  height: 20px;
   border-radius: 10px;
+  margin: 10px 0;
   overflow: hidden;
-  margin-bottom: 1rem;
 }
 
 #progress-bar {
+  background: #28a745;
   height: 100%;
-  width: 0%;
-  background-color: #28a745;
-  transition: width 0.1s linear;
+  width: 0;
+  transition: width 1s linear;
 }
 
-/* Routine creator */
-#routine-creator h2 {
-  margin-top: 2rem;
+#next-exercise {
+  font-style: italic;
   text-align: center;
+  margin-bottom: 20px;
 }
 
-.routine-header {
+#routine-creator {
+  margin-top: 20px;
+}
+
+.routine-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5em;
-  margin-bottom: 1em;
   align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
-.routine-header label {
-  font-weight: 600;
-}
-
-.routine-header input {
-  flex: 1;
-  padding: 0.5em;
-  font-size: 1em;
-  min-width: 60px;
-}
-
-input, select, button {
-  margin: 0.3em 0;
-  padding: 0.5em;
-  font-size: 1em;
-  box-sizing: border-box;
+#exercise-list {
+  margin: 10px 0;
 }
 
 .exercise-item {
   display: flex;
-  gap: 0.5em;
   align-items: center;
-  margin-bottom: 0.5em;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
-.exercise-item input.exercise-name {
-  flex: 2;
+.exercise-item input {
+  padding: 5px;
 }
 
-.exercise-item label {
-  flex: 1;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.exercise-duration {
-  flex: 1;
-  width: 70px;
-}
-
-.delete-exercise {
+.delete-btn {
   background: none;
   border: none;
-  font-size: 1.2rem;
-  color: red;
+  color: black;
+  font-size: 14px;
   cursor: pointer;
+  line-height: 1;
 }
 
 #save-feedback {
-  font-size: 0.9rem;
-  color: #28a745;
-  margin-top: 0.5em;
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: green;
 }
 
 #routine-manager {
-  margin-top: 1rem;
   display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-#routine-manager select {
-  flex-grow: 1;
+  gap: 10px;
+  margin-top: 15px;
+  flex-wrap: wrap;
 }
