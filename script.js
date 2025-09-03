@@ -232,6 +232,4 @@ function updateDisplay(name) {
   document.getElementById("next-exercise").textContent = nextText;
 }
 
-
 updateRoutineSelect();
-
