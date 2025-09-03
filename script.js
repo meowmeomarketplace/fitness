@@ -56,7 +56,6 @@ function addExercise() {
   div.className = "exercise-item";
   div.innerHTML = `
     <input type="text" class="exercise-name" placeholder="Exercise Name" />
-    <label>Duration (seconds):</label>
     <input type="number" class="exercise-duration" value="30" min="1" />
     <button type="button" class="delete-exercise" onclick="deleteExercise(this)">✖</button>
   `;
@@ -150,7 +149,6 @@ function startTimer() {
         if (routineIndex < routine.exercises.length - 1) state = "restExercise";
         else if (setIndex < routine.sets) state = "restSet";
         else { 
-          // Routine complete - inline message
           document.getElementById("current-exercise").textContent = "Routine complete!";
           document.getElementById("next-exercise").textContent = "";
           document.getElementById("timer").textContent = "00:00";
@@ -184,13 +182,11 @@ function updateDisplay(name, type) {
   document.getElementById("current-set").textContent = `Set ${setIndex} of ${routine.sets}`;
   document.getElementById("current-exercise").textContent = name;
 
-  // Progress bar color
   progressBar.className = "";
   if (type === "exercise") progressBar.classList.add("exercise");
   else if (type === "restExercise") progressBar.classList.add("rest-exercise");
   else if (type === "restSet") progressBar.classList.add("rest-set");
 
-  // Next exercise text
   let nextText = "";
   if (type === "exercise") {
     if (routineIndex < routine.exercises.length - 1) nextText = `Next: ${routine.exercises[routineIndex + 1].name}`;
