@@ -19,9 +19,7 @@ function saveRoutine() {
   document.querySelectorAll("#exercise-list .exercise-item").forEach(item => {
     const exName = item.querySelector(".exercise-name").value.trim();
     const exDuration = parseInt(item.querySelector(".exercise-duration").value);
-    if (exName && exDuration > 0) {
-      exercises.push({ name: exName, duration: exDuration });
-    }
+    if (exName && exDuration > 0) exercises.push({ name: exName, duration: exDuration });
   });
 
   if (exercises.length === 0) { alert("Please add at least one exercise."); return; }
@@ -109,13 +107,13 @@ function resetRoutine() {
 function loadExercise() {
   if (!routine) return;
 
+  // Completed all exercises in current set
   if (routineIndex >= routine.exercises.length) {
     if (setIndex < routine.sets) {
-      // Rest between sets
+      // Start rest between sets
       isRest = true;
       timeLeft = routine.setRest;
       totalTime = timeLeft;
-      routineIndex = 0;
       updateDisplay("Rest", true);
       startTimer();
       return;
@@ -129,8 +127,13 @@ function loadExercise() {
   const exercise = routine.exercises[routineIndex];
 
   if (isRest) {
+    // Rest just ended
     isRest = false;
-    setIndex++;
+
+    if (routineIndex === 0 && setIndex < routine.sets) {
+      setIndex++;
+    }
+
     loadExercise();
     return;
   }
@@ -189,7 +192,7 @@ function updateDisplay(name, isSetRest = false) {
   document.getElementById("current-set").textContent = `Set ${setIndex} of ${routine.sets}`;
   document.getElementById("current-exercise").textContent = name;
 
-  // Set progress bar color (once, color persists)
+  // Set progress bar color
   progressBar.className = "";
   if (name === "Rest") {
     if (isSetRest) progressBar.classList.add("rest-set");
