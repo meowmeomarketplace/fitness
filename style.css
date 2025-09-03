@@ -48,10 +48,10 @@ body {
 }
 
 #current-exercise {
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 2rem;       /* bigger and bolder for mobile */
+  font-weight: 800;
   text-align: center;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.5rem;
   min-height: 2.2rem;
   white-space: pre-line;
 }
@@ -64,10 +64,11 @@ body {
 }
 
 #timer {
-  font-size: 4rem;
+  font-size: 6rem;       /* larger for mobile */
   font-weight: 900;
   text-align: center;
-  margin-bottom: 0.7rem;
+  width: 100%;
+  margin: 1rem 0;
   font-family: 'Courier New', Courier, monospace;
   letter-spacing: 4px;
 }
@@ -109,9 +110,10 @@ input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-siz
 
 .exercise-item {
   display: flex;
-  gap: 0.5em;
   align-items: center;
+  gap: 0.5em;
   margin-bottom: 0.5em;
+  flex-wrap: wrap; /* allows wrapping on small screens */
 }
 
 .exercise-item input.exercise-name { flex: 2; }
@@ -119,9 +121,11 @@ input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-siz
 .exercise-duration { flex: 1; width: 70px; }
 
 .delete-exercise {
+  flex: 0 0 auto;
+  font-size: 1.2rem;
+  margin-left: auto; /* keeps button inside bounds on mobile */
   background: none;
   border: none;
-  font-size: 0.9rem;
   color: #333;
   cursor: pointer;
   padding: 0;
