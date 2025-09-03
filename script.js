@@ -196,22 +196,42 @@ function updateTimer() {
 }
 
 function updateDisplay(name) {
+  const progressBar = document.getElementById("progress-bar");
+
+  // Reset progress bar classes
+  progressBar.className = "";
+
   document.getElementById("current-exercise").textContent = name;
   document.getElementById("current-set").textContent = `Set ${setIndex} of ${routine.sets}`;
 
   let nextText = "";
+
   if (name === "Rest") {
-    if (routineIndex < routine.exercises.length) {
-      nextText = "Next: " + routine.exercises[routineIndex].name;
+    // Decide which type of rest
+    if (routineIndex === 0 && setIndex > 1) {
+      // This is a set rest
+      progressBar.classList.add("rest-set");
+      nextText = routine.exercises.length > 0 ? "Next: " + routine.exercises[0].name : "";
+    } else {
+      // This is an exercise rest
+      progressBar.classList.add("rest-exercise");
+      if (routineIndex < routine.exercises.length) {
+        nextText = "Next: " + routine.exercises[routineIndex].name;
+      }
     }
   } else {
+    // Exercise time
+    progressBar.classList.add("exercise");
     if (routineIndex + 1 < routine.exercises.length) {
       nextText = "Next: " + routine.exercises[routineIndex + 1].name;
     } else if (setIndex < routine.sets) {
       nextText = `Next: Rest (${routine.setRest}s)`;
     }
   }
+
   document.getElementById("next-exercise").textContent = nextText;
 }
 
+
 updateRoutineSelect();
+
