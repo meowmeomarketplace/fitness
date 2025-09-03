@@ -110,38 +110,35 @@ input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-siz
 
 /* --- Exercise list header --- */
 .exercise-header {
-  display: flex;
-  justify-content: space-between; /* aligns header spans exactly with inputs */
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
   font-weight: 600;
   margin-bottom: 0.3em;
 }
 
 .exercise-header span:first-child {
-  flex: 2; /* aligns with exercise name input */
+  text-align: left;
 }
 
-.exercise-header span:last-child {
-  flex: 1; /* aligns with duration input */
-  text-align: left; /* left-align the label above duration column */
-  padding-left: 0.3em; /* match input padding for perfect alignment */
+.exercise-header span.duration-label {
+  text-align: left; /* aligns above duration column */
+  padding-left: 0.3em;
 }
 
 /* --- Exercise items --- */
 .exercise-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 2fr 1fr auto; /* name | duration | delete button */
   align-items: center;
   gap: 0.5em;
   margin-bottom: 0.5em;
-  flex-wrap: wrap; /* allows wrapping on small screens */
 }
 
-.exercise-item input.exercise-name { flex: 2; }
-.exercise-item input.exercise-duration { flex: 1; padding-left: 0.3em; } /* match header label alignment */
+.exercise-item input.exercise-name { width: 100%; }
+.exercise-item input.exercise-duration { width: 100%; }
 
 .delete-exercise {
-  flex: 0 0 auto;
   font-size: 1.2rem;
-  margin-left: auto; /* keeps button inside bounds on mobile */
   background: none;
   border: none;
   color: #333;
