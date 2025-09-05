@@ -138,9 +138,10 @@ input, select, button {
 .exercise-header span:first-child { flex: 2; }
 
 .exercise-header span:last-child {
-  flex: 1;
+  flex: 1;               /* same as input */
   text-align: left;
-  padding-left: 0.5em;
+  padding-left: 0.5em;   /* match the input padding */
+  box-sizing: border-box; /* ensures width + padding align */
 }
 
 /* --- Exercise items --- */
@@ -180,4 +181,5 @@ input, select, button {
 
 #routine-manager { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; }
 #routine-manager select { flex-grow: 1; }
+
 
