@@ -130,18 +130,18 @@ input, select, button {
 /* --- Exercise list header --- */
 .exercise-header {
   display: flex;
-  justify-content: space-between;
   font-weight: 600;
   margin-bottom: 0.3em;
 }
 
-.exercise-header span:first-child { flex: 2; }
+.exercise-header span:first-child {
+  flex: 2 1 auto; /* aligns with exercise name input */
+}
 
 .exercise-header span:last-child {
-  flex: 1;               /* same as input */
+  flex: 1 1 auto;  /* aligns with duration input */
   text-align: left;
-  padding-left: 0em;   /* match the input padding */
-  margin-left: -0.3em;
+  padding-left: 0.3em; /* match input padding */
 }
 
 /* --- Exercise items --- */
@@ -181,6 +181,7 @@ input, select, button {
 
 #routine-manager { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; }
 #routine-manager select { flex-grow: 1; }
+
 
 
 
