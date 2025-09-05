@@ -48,7 +48,7 @@ body {
 }
 
 #current-exercise {
-  font-size: 2rem;
+  font-size: 2rem;       /* bigger and bolder for mobile */
   font-weight: 800;
   text-align: center;
   margin-bottom: 0.5rem;
@@ -64,7 +64,7 @@ body {
 }
 
 #timer {
-  font-size: 6rem;
+  font-size: 6rem;       /* larger for mobile */
   font-weight: 900;
   text-align: center;
   width: 100%;
@@ -88,9 +88,9 @@ body {
   transition: width 50ms linear;
 }
 
-#progress-bar.exercise { background-color: #28a745; }
-#progress-bar.rest-exercise { background-color: #ffc107; }
-#progress-bar.rest-set { background-color: #007bff; }
+#progress-bar.exercise { background-color: #28a745; }       /* green */
+#progress-bar.rest-exercise { background-color: #ffc107; }  /* yellow */
+#progress-bar.rest-set { background-color: #007bff; }       /* blue */
 
 #routine-creator h2 { margin-top: 2rem; text-align: center; }
 
@@ -103,86 +103,69 @@ body {
 }
 
 .routine-header label { font-weight: 600; }
+
 .routine-header input { flex: 1; padding: 0.5em; font-size: 1em; min-width: 60px; }
 
-input, select, button {
-  margin: 0.3em 0;
-  padding: 0.5em;
-  font-size: 1em;
-  box-sizing: border-box;
-}
+input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-sizing: border-box; }
 
 /* --- Exercise list header --- */
 .exercise-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 2fr 1fr auto; /* aligns with item columns */
   font-weight: 600;
   margin-bottom: 0.3em;
 }
 
-.exercise-header span:first-child { flex: 2; }
-.exercise-header span:last-child {
-  flex: 1;
-  text-align: left;
+.exercise-header span:first-child {
+  justify-self: start;
+}
+
+.exercise-header span.duration-label {
+  justify-self: start;
   padding-left: 0.3em;
 }
 
 /* --- Exercise items --- */
 .exercise-item {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 2fr 1fr auto; /* name | duration | delete */
   gap: 0.5em;
   margin-bottom: 0.5em;
-  flex-wrap: nowrap;
+  align-items: center;
   width: 100%;
+  box-sizing: border-box;
 }
 
-.exercise-item input.exercise-name {
-  flex: 2;
-  min-width: 0;
-}
-
+.exercise-item input.exercise-name,
 .exercise-item input.exercise-duration {
-  flex: 1;
-  padding-left: 0.3em;
+  width: 100%;
   min-width: 0;
   box-sizing: border-box;
 }
 
+.exercise-item input.exercise-duration {
+  padding-left: 0.3em;
+  text-align: left;
+}
+
 .delete-exercise {
-  flex: 0 0 auto;
   font-size: 1.2rem;
-  margin-left: 0.3em;
   background: none;
   border: none;
   color: #333;
   cursor: pointer;
-  padding: 0 0.4em;
   line-height: 1;
+  padding: 0;
+  margin: 0;
+  justify-self: center; /* keeps inside its column */
 }
 
-.delete-exercise:hover { color: #000; transform: scale(1.2); }
+.delete-exercise:hover {
+  color: #000;
+  transform: scale(1.2);
+}
 
 #save-feedback { font-size: 0.9rem; color: #28a745; margin-top: 0.5em; }
 
-#routine-manager {
-  margin-top: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
+#routine-manager { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; }
 #routine-manager select { flex-grow: 1; }
-
-/* --- Mobile Fix: keep inputs in 2 columns even on narrow screens --- */
-@media (max-width: 480px) {
-  .exercise-item {
-    display: grid;
-    grid-template-columns: 2fr 1fr auto; /* name | duration | X */
-    gap: 0.5em;
-    align-items: center;
-  }
-
-  .exercise-item input.exercise-name { width: 100%; }
-  .exercise-item input.exercise-duration { width: 100%; }
-  .delete-exercise { margin-left: 0; justify-self: end; }
-}
