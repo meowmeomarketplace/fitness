@@ -106,22 +106,28 @@ body {
 
 .routine-header input { flex: 1; padding: 0.5em; font-size: 1em; min-width: 60px; }
 
-input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-sizing: border-box; }
+input, select, button {
+  margin: 0.3em 0;
+  padding: 0.5em;
+  font-size: 1em;
+  box-sizing: border-box;
+}
 
 /* --- Exercise list header --- */
 .exercise-header {
-  display: grid;
-  grid-template-columns: 2fr 1fr auto; /* aligns with item columns */
+  display: flex;
+  justify-content: space-between;
   font-weight: 600;
   margin-bottom: 0.3em;
 }
 
 .exercise-header span:first-child {
-  justify-self: start;
+  flex: 2; /* aligns with exercise name input */
 }
 
-.exercise-header span.duration-label {
-  justify-self: start;
+.exercise-header span:last-child {
+  flex: 1; /* aligns with duration input */
+  text-align: left;
   padding-left: 0.3em;
 }
 
@@ -139,7 +145,7 @@ input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-siz
 .exercise-item input.exercise-name,
 .exercise-item input.exercise-duration {
   width: 100%;
-  min-width: 0;
+  min-width: 0; /* prevents overflow */
   box-sizing: border-box;
 }
 
@@ -157,15 +163,23 @@ input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-siz
   line-height: 1;
   padding: 0;
   margin: 0;
-  justify-self: center; /* keeps inside its column */
+  justify-self: center; /* stays in grid column */
 }
 
-.delete-exercise:hover {
-  color: #000;
-  transform: scale(1.2);
-}
+.delete-exercise:hover { color: #000; transform: scale(1.2); }
 
 #save-feedback { font-size: 0.9rem; color: #28a745; margin-top: 0.5em; }
 
 #routine-manager { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; }
 #routine-manager select { flex-grow: 1; }
+
+/* ✅ Remove iOS Safari blue number styling */
+input[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none; /* Chrome, Safari, Edge */
+  margin: 0;
+}
