@@ -112,7 +112,7 @@ input, select, button {
   font-size: 1em;
   box-sizing: border-box;
 
-  /* Fix for mobile blue tint */
+  /* 🔹 Fix for mobile blue tint */
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -122,21 +122,27 @@ input, select, button {
   background: #fff;
 }
 
-/* Remove blue highlight on tap */
+/* 🔹 Remove blue highlight on tap */
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
 /* --- Exercise list header --- */
 .exercise-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 2fr 1fr auto; /* match exercise item columns */
   font-weight: 600;
   margin-bottom: 0.3em;
 }
 
-.exercise-header span:first-child { flex: 2; }
-.exercise-header span:last-child { flex: 1; text-align: left; padding-left: 0.3em; }
+.exercise-header span:first-child {
+  text-align: left; /* Exercise Name label */
+}
+
+.exercise-header span:last-child {
+  text-align: left; /* Duration label aligned with input column */
+  padding-left: 0.3em;
+}
 
 /* --- Exercise items --- */
 .exercise-item {
@@ -179,3 +185,26 @@ input, select, button {
 
 #routine-manager { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; }
 #routine-manager select { flex-grow: 1; }
+
+/* --- Remove iOS Safari blue spinner and highlight --- */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  appearance: none;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type=number]:focus {
+  outline: none;
+  border-color: #666;
+  box-shadow: none;
+}
