@@ -106,43 +106,24 @@ body {
 
 .routine-header input { flex: 1; padding: 0.5em; font-size: 1em; min-width: 60px; }
 
-input, select, button {
-  margin: 0.3em 0;
-  padding: 0.5em;
-  font-size: 1em;
-  box-sizing: border-box;
-
-  /* 🔹 Fix for mobile blue tint */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-}
-
-/* 🔹 Remove blue highlight on tap */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
+input, select, button { margin: 0.3em 0; padding: 0.5em; font-size: 1em; box-sizing: border-box; }
 
 /* --- Exercise list header --- */
 .exercise-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* aligns header spans exactly with inputs */
   font-weight: 600;
   margin-bottom: 0.3em;
 }
 
 .exercise-header span:first-child {
-  flex: 2;
+  flex: 2; /* aligns with exercise name input */
 }
 
 .exercise-header span:last-child {
-  flex: 1;
-  text-align: left;
-  padding-left: 0.3em;
+  flex: 1; /* aligns with duration input */
+  text-align: left; /* left-align the label above duration column */
+  padding-left: 0.3em; /* match input padding for perfect alignment */
 }
 
 /* --- Exercise items --- */
@@ -151,21 +132,31 @@ input, select, button {
   align-items: center;
   gap: 0.5em;
   margin-bottom: 0.5em;
-  flex-wrap: nowrap; /* stay in one row for mobile */
+  flex-wrap: nowrap;
+  width: 100%; /* ✅ keeps inputs inside */
 }
 
-.exercise-item input.exercise-name { flex: 2; }
-.exercise-item input.exercise-duration { flex: 1; padding-left: 0.3em; }
+.exercise-item input.exercise-name {
+  flex: 2;
+  min-width: 0; /* ✅ prevent overflow */
+}
+
+.exercise-item input.exercise-duration {
+  flex: 1;
+  padding-left: 0.3em;
+  min-width: 0; /* ✅ keep inside container */
+  box-sizing: border-box;
+}
 
 .delete-exercise {
   flex: 0 0 auto;
   font-size: 1.2rem;
-  margin-left: auto;
+  margin-left: 0.3em; /* ✅ spacing without pushing */
   background: none;
   border: none;
   color: #333;
   cursor: pointer;
-  padding: 0;
+  padding: 0 0.4em; /* ✅ tap area but no overflow */
   line-height: 1;
 }
 
