@@ -48,7 +48,7 @@ body {
 }
 
 #current-exercise {
-  font-size: 2rem;       /* bigger and bolder for mobile */
+  font-size: 2rem;
   font-weight: 800;
   text-align: center;
   margin-bottom: 0.5rem;
@@ -64,7 +64,7 @@ body {
 }
 
 #timer {
-  font-size: 6rem;       /* larger for mobile */
+  font-size: 6rem;
   font-weight: 900;
   text-align: center;
   width: 100%;
@@ -88,9 +88,9 @@ body {
   transition: width 50ms linear;
 }
 
-#progress-bar.exercise { background-color: #28a745; }       /* green */
-#progress-bar.rest-exercise { background-color: #ffc107; }  /* yellow */
-#progress-bar.rest-set { background-color: #007bff; }       /* blue */
+#progress-bar.exercise { background-color: #28a745; }
+#progress-bar.rest-exercise { background-color: #ffc107; }
+#progress-bar.rest-set { background-color: #007bff; }
 
 #routine-creator h2 { margin-top: 2rem; text-align: center; }
 
@@ -122,11 +122,11 @@ input, select, button {
 }
 
 .exercise-header span:first-child {
-  flex: 2; /* aligns with exercise name input */
+  flex: 2;
 }
 
 .exercise-header span:last-child {
-  flex: 1; /* aligns with duration input */
+  flex: 1;
   text-align: left;
   padding-left: 0.3em;
 }
@@ -145,7 +145,7 @@ input, select, button {
 .exercise-item input.exercise-name,
 .exercise-item input.exercise-duration {
   width: 100%;
-  min-width: 0; /* prevents overflow */
+  min-width: 0;
   box-sizing: border-box;
 }
 
@@ -163,7 +163,7 @@ input, select, button {
   line-height: 1;
   padding: 0;
   margin: 0;
-  justify-self: center; /* stays in grid column */
+  justify-self: center;
 }
 
 .delete-exercise:hover { color: #000; transform: scale(1.2); }
@@ -173,13 +173,24 @@ input, select, button {
 #routine-manager { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; }
 #routine-manager select { flex-grow: 1; }
 
-/* ✅ Remove iOS Safari blue number styling */
+/* --- Remove iOS Safari blue spinner and highlight --- */
 input[type=number] {
   -moz-appearance: textfield; /* Firefox */
+  -webkit-appearance: none;    /* Chrome/Safari */
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type=number]:focus {
+  outline: none;
+  border-color: #666;
+  box-shadow: none;
 }
 
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none; /* Chrome, Safari, Edge */
+  -webkit-appearance: none;
   margin: 0;
 }
