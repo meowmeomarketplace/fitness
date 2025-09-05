@@ -177,7 +177,7 @@ input, select, button {
 input[type=number] {
   -moz-appearance: textfield; /* Firefox */
   -webkit-appearance: none;    /* Chrome/Safari */
-  color: #333;
+  color: #333;                 /* text color inside box */
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -187,6 +187,7 @@ input[type=number]:focus {
   outline: none;
   border-color: #666;
   box-shadow: none;
+  -webkit-tap-highlight-color: transparent; /* removes blue tap highlight on mobile */
 }
 
 input[type=number]::-webkit-inner-spin-button,
