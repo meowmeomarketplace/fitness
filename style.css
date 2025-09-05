@@ -147,30 +147,36 @@ input, select, button {
 
 /* --- Exercise items --- */
 .exercise-item {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 2fr 1fr auto; /* name | duration | delete */
   gap: 0.5em;
   margin-bottom: 0.5em;
-  flex-wrap: nowrap; /* keep inputs in one row */
+  width: 100%;       /* make sure it stays inside container */
+  box-sizing: border-box;
+  align-items: center;
 }
 
-.exercise-item input.exercise-name { flex: 2; }
+.exercise-item input.exercise-name,
 .exercise-item input.exercise-duration {
-  flex: 1;
-  padding-left: 0.25em; /* match header padding exactly */
-  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box; /* ensures padding doesn’t push outside */
+}
+
+.exercise-item input.exercise-duration {
+  padding-left: 0.25em; /* match header padding */
 }
 
 .delete-exercise {
-  flex: 0 0 auto;
   font-size: 1.2rem;
-  margin-left: 0.3em;
   background: none;
   border: none;
   color: #333;
   cursor: pointer;
-  padding: 0;
   line-height: 1;
+  padding: 0;
+  margin: 0;
+  justify-self: end;   /* aligns button to right inside the grid column */
 }
 
 .delete-exercise:hover { color: #000; transform: scale(1.2); }
@@ -179,6 +185,7 @@ input, select, button {
 
 #routine-manager { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; }
 #routine-manager select { flex-grow: 1; }
+
 
 
 
