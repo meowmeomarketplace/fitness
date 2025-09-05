@@ -135,14 +135,14 @@ input, select, button {
 }
 
 .exercise-header span:first-child {
-  flex: 2; /* aligns with exercise name input */
+  flex: 2; /* aligns with exercise-name input */
 }
 
 .exercise-header span:last-child {
-  flex: 1;          /* aligns with duration input */
-  text-align: left;
-  padding-left: 0em; /* adjust this to nudge text to your liking */
-  box-sizing: border-box; /* ensures padding doesn’t push it outside */
+  flex: 1;            /* aligns with duration input */
+  text-align: left;   
+  padding-left: 0.25em; /* fine-tuned to line up exactly */
+  box-sizing: border-box;
 }
 
 /* --- Exercise items --- */
@@ -151,17 +151,14 @@ input, select, button {
   align-items: center;
   gap: 0.5em;
   margin-bottom: 0.5em;
-  flex-wrap: nowrap;          /* stay in one row */
-  width: 100%;
-  box-sizing: border-box;
+  flex-wrap: nowrap; /* keep inputs in one row */
 }
 
 .exercise-item input.exercise-name { flex: 2; }
-.exercise-item input.exercise-duration { 
-  flex: 1; 
-  padding-left: 0.3em; 
-  text-align: left; 
-  min-width: 0;
+.exercise-item input.exercise-duration {
+  flex: 1;
+  padding-left: 0.25em; /* match header padding exactly */
+  box-sizing: border-box;
 }
 
 .delete-exercise {
@@ -182,6 +179,7 @@ input, select, button {
 
 #routine-manager { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; }
 #routine-manager select { flex-grow: 1; }
+
 
 
 
